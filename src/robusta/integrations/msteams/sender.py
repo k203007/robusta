@@ -16,22 +16,19 @@ from ...core.model.env_vars import TARGET_ID
 MsTeamsBlock = Dict[str, Any]
 
 class MsTeamskSender:
+    msteams_hookurl = ''
     def __init__(self, msteams_hookurl: str):
-        try:
-            self.myTeamsMessage = pymsteams.connectorcard(msteams_hookurl)
-        except Exception as e:
-            logging.error(f"Cannot connect to MsTeams Channel: {e}")
-            raise e
+        self.msteams_hookurl = msteams_hookurl
 
     def __to_slack(self, block: BaseBlock, sink_name: str) -> List[MsTeamsBlock]:        
         if isinstance(block, MarkdownBlock):
-            MsTeamsImplementation.__markdown_block(self.myTeamsMessage, block)
+            self.msteams_implementation.__markdown_block(self.myTeamsMessage, block)
         elif isinstance(block, DividerBlock):
-            MsTeamsImplementation.__divider_block(self.myTeamsMessage, block)
+            self.msteams_implementation.__divider_block(self.myTeamsMessage, block)
         elif isinstance(block, FileBlock):
             raise AssertionError("to_slack() should never be called on a FileBlock")
         elif isinstance(block, HeaderBlock):
-            MsTeamsImplementation.__header_block(self.myTeamsMessage, block)
+            self.msteams_implementation.__header_block(self.myTeamsMessage, block)
         elif isinstance(block, ListBlock) or isinstance(block, TableBlock):
             return self.__to_slack(block.to_markdown(), sink_name)
         elif isinstance(block, KubernetesDiffBlock):
@@ -40,7 +37,7 @@ class MsTeamskSender:
             context = block.context.copy()
             context["target_id"] = TARGET_ID
             context["sink_name"] = sink_name
-            return MsTeamsImplementation.__get_action_block_for_choices(self.myTeamsMessage,
+            return self.msteams_implementation.__get_action_block_for_choices(self.myTeamsMessage,
                 block.choices, json.dumps(context)
             )
         else:
@@ -56,7 +53,7 @@ class MsTeamskSender:
 
       slack_blocks = []
       slack_blocks.extend(
-          MsTeamsImplementation.__to_slack(
+          self.__to_slack(
               ListBlock(
                   [
                       f"*{d.formatted_path}*: {d.other_value} :arrow_right: {d.value}"
@@ -140,17 +137,24 @@ class MsTeamskSender:
                 f"error sending message to msteams\ne={e}\ntext={message}\nblocks={output_blocks}\nattachment_blocks={attachment_blocks}"
             )
 
+    def __create_new_card(self, title: str, description: str):
+        self.msteams_implementation = MsTeamsImplementation(self.msteams_hookurl, title, description)        
+
     def send_finding_to_slack(
         self, finding: Finding, slack_channel: str, sink_name: str
     ):
         blocks: List[BaseBlock] = []
-        attachment_blocks: List[BaseBlock] = []
         # first add finding description block
         if finding.description:
             blocks.append(MarkdownBlock(finding.description))
 
+        self.__create_new_card(finding.title, finding.description)
+
         unfurl = True
         for enrichment in finding.enrichments:
+            
+            attachment_blocks: List[BaseBlock] = []
+
             # if one of the enrichment specified unfurl=False, this slack message will contain unfurl=False
             unfurl = unfurl and enrichment.annotations.get(
                 SlackAnnotations.UNFURL, True
@@ -160,6 +164,6 @@ class MsTeamskSender:
             else:
                 blocks.extend(enrichment.blocks)
 
-        self.__send_blocks_to_slack(
-            blocks, attachment_blocks, finding.title, slack_channel, unfurl, sink_name
+            self.__send_blocks_to_slack(
+                blocks, attachment_blocks, finding.title, slack_channel, unfurl, sink_name
         )

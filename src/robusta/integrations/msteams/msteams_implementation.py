@@ -17,8 +17,15 @@ MsTeamsBlock = Dict[str, Any]
 
 class MsTeamsImplementation:
 
-  @staticmethod
-  def __markdown_block(card: pymsteams.connectorcard, block: BaseBlock):
+    def __init__(self, msteams_hookurl: str, title: str, description: str):
+        try:
+            self.myTeamsMessage = pymsteams.connectorcard(msteams_hookurl)
+            self.myTeamsMessage
+        except Exception as e:
+            logging.error(f"Cannot connect to MsTeams Channel: {e}")
+            raise e
+
+    def __markdown_block(self, card: pymsteams.connectorcard, block: BaseBlock):
       if not block.text:
           return []
       return [
@@ -26,29 +33,26 @@ class MsTeamsImplementation:
               "type": "section",
               "text": {
                   "type": "mrkdwn",
-                  "text": MsTeamsImplementation.__apply_length_limit(block.text),
+                  "text": self.__apply_length_limit(block.text),
               },
           }
       ]
 
-  @staticmethod
-  def __divider_block(card: pymsteams.connectorcard, block: BaseBlock):
+    def __divider_block(self, card: pymsteams.connectorcard, block: BaseBlock):
       return [{"type": "divider"}]
 
-  @staticmethod
-  def __header_block(card: pymsteams.connectorcard, block: BaseBlock):
+    def __header_block(self, card: pymsteams.connectorcard, block: BaseBlock):
       return [
           {
               "type": "header",
               "text": {
                   "type": "plain_text",
-                  "text": MsTeamsImplementation.__apply_length_limit(block.text, 150),
+                  "text": self.__apply_length_limit(block.text, 150),
               },
           }
       ]
 
-  @staticmethod
-  def __get_action_block_for_choices(card: pymsteams.connectorcard, choices: Dict[str, Callable] = None, context=""):
+    def __get_action_block_for_choices(self, card: pymsteams.connectorcard, choices: Dict[str, Callable] = None, context=""):
       if choices is None:
           return []
 
@@ -71,8 +75,7 @@ class MsTeamsImplementation:
 
       return [{"type": "actions", "elements": buttons}]
 
-  @staticmethod
-  def __apply_length_limit(msg: str, max_length: int = 3000):
+    def __apply_length_limit(self, msg: str, max_length: int = 3000):
       if len(msg) <= max_length:
           return msg
       truncator = "..."
