@@ -16,68 +16,71 @@ ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 MsTeamsBlock = Dict[str, Any]
 
 class MsTeamsImplementation:
+    current_header_string = ''
+    current_section_string = ''
 
     def __init__(self, msteams_hookurl: str, title: str, description: str):
         try:
             self.myTeamsMessage = pymsteams.connectorcard(msteams_hookurl)
-            self.myTeamsMessage
+            self.myTeamsMessage.title(title)
+            if description is not None:
+                self.myTeamsMessage.text(description)  
         except Exception as e:
             logging.error(f"Cannot connect to MsTeams Channel: {e}")
             raise e
 
+    def new_card_section(self):
+        section = pymsteams.cardsection()
+        if self.current_header_string != '':
+            section.activityTitle(self.current_section_string)
+        if self.current_section_string != '':
+            section.activityText(self.current_section_string)
+
+        if self.current_section_string == '' and self.current_header_string == '':
+            return
+
+        self.myTeamsMessage.addSection(section)
+        self.current_header_string = ''
+        self.current_section_string = ''
+
     def __markdown_block(self, card: pymsteams.connectorcard, block: BaseBlock):
-      if not block.text:
-          return []
-      return [
-          {
-              "type": "section",
-              "text": {
-                  "type": "mrkdwn",
-                  "text": self.__apply_length_limit(block.text),
-              },
-          }
-      ]
+        if not block.text:
+            return
+        self.current_section_string += self.__apply_length_limit(block.text) + '\n\n'
 
     def __divider_block(self, card: pymsteams.connectorcard, block: BaseBlock):
-      return [{"type": "divider"}]
+        self.current_section_string += '\n\n'
 
     def __header_block(self, card: pymsteams.connectorcard, block: BaseBlock):
-      return [
-          {
-              "type": "header",
-              "text": {
-                  "type": "plain_text",
-                  "text": self.__apply_length_limit(block.text, 150),
-              },
-          }
-      ]
+        self.current_header_string += self.__apply_length_limit(block.text, 150) + '\n\n'
 
     def __get_action_block_for_choices(self, card: pymsteams.connectorcard, choices: Dict[str, Callable] = None, context=""):
-      if choices is None:
-          return []
+        if choices is None:
+          return
+        '''
+        buttons = []
+        for (i, (text, callback)) in enumerate(choices.items()):
+            buttons.append(
+                {
+                    "type": "button",
+                    "text": {
+                        "type": "plain_text",
+                        "text": text,
+                    },
+                    "style": "primary",
+                    "action_id": f"{ACTION_TRIGGER_PLAYBOOK}_{i}",
+                    "value": PlaybookCallbackRequest.create_for_func(
+                        callback, context, text
+                    ).json(),
+                }
+            )
 
-      buttons = []
-      for (i, (text, callback)) in enumerate(choices.items()):
-          buttons.append(
-              {
-                  "type": "button",
-                  "text": {
-                      "type": "plain_text",
-                      "text": text,
-                  },
-                  "style": "primary",
-                  "action_id": f"{ACTION_TRIGGER_PLAYBOOK}_{i}",
-                  "value": PlaybookCallbackRequest.create_for_func(
-                      callback, context, text
-                  ).json(),
-              }
-          )
-
-      return [{"type": "actions", "elements": buttons}]
+        return [{"type": "actions", "elements": buttons}]
+        '''
 
     def __apply_length_limit(self, msg: str, max_length: int = 3000):
-      if len(msg) <= max_length:
-          return msg
-      truncator = "..."
-      return msg[: max_length - len(truncator)] + truncator
+        if len(msg) <= max_length:
+            return msg
+        truncator = "..."
+        return msg[: max_length - len(truncator)] + truncator
 

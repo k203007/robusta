@@ -94,7 +94,7 @@ class MsTeamskSender:
         if len(message) == 0:
             return "empty-message"  # blank messages aren't allowed
 
-        return MsTeamskSender.__apply_length_limit(message)
+        return self.msteams_implementation.__apply_length_limit(message)
 
     def __send_blocks_to_slack(
         self,
@@ -141,8 +141,7 @@ class MsTeamskSender:
         self.msteams_implementation = MsTeamsImplementation(self.msteams_hookurl, title, description)        
 
     def send_finding_to_slack(
-        self, finding: Finding, slack_channel: str, sink_name: str
-    ):
+        self, finding: Finding, slack_channel: str, sink_name: str):
         blocks: List[BaseBlock] = []
         # first add finding description block
         if finding.description:
@@ -163,7 +162,10 @@ class MsTeamskSender:
                 attachment_blocks.extend(enrichment.blocks)
             else:
                 blocks.extend(enrichment.blocks)
-
+            
             self.__send_blocks_to_slack(
-                blocks, attachment_blocks, finding.title, slack_channel, unfurl, sink_name
-        )
+                blocks, attachment_blocks, finding.title, slack_channel, unfurl, sink_name)
+            
+            self.msteams_implementation.new_card_section()
+
+        
