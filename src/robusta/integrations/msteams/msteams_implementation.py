@@ -43,6 +43,13 @@ class MsTeamsImplementation:
         self.current_header_string = ''
         self.current_section_string = ''
 
+    def send(self):
+        try:
+            self.myTeamsMessage.send()
+        except Exception as e:
+            logging.error(f"error sending message to msteams\ne={e}\n")
+        
+
     def __markdown_block(self, card: pymsteams.connectorcard, block: BaseBlock):
         if not block.text:
             return

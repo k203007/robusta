@@ -77,71 +77,34 @@ class MsTeamskSender:
             )
             return result["file"]["permalink"]
 
-    def prepare_slack_text(self, message: str, files: List[FileBlock] = []):
-        if files:
-            # it's a little annoying but it seems like files need to be referenced in `title` and not just `blocks`
-            # in order to be actually shared. well, I'm actually not sure about that, but when I tried adding the files
-            # to a separate block and not including them in `title` or the first block then the link was present but
-            # the file wasn't actually shared and the link was broken
-            uploaded_files = []
-            for file_block in files:
-                permalink = self.__upload_file_to_slack(file_block)
-                uploaded_files.append(f"* <{permalink} | {file_block.filename}>")
+    def __upload_files(self, report_blocks: List[BaseBlock] = []):
+        file_blocks = add_pngs_for_all_svgs(
+            [b for b in report_blocks if isinstance(b, FileBlock)]
+        )
+        if not file_blocks:
+            return
+        uploaded_files = []
+        for file_block in file_blocks:
+            permalink = self.__upload_file_to_slack(file_block)
+            uploaded_files.append(f"* <{permalink} | {file_block.filename}>")
 
-            file_references = "\n".join(uploaded_files)
-            message = f"{message}\n{file_references}"
-
-        if len(message) == 0:
-            return "empty-message"  # blank messages aren't allowed
-
-        return self.msteams_implementation.__apply_length_limit(message)
+        file_references = "\n".join(uploaded_files)
 
     def __send_blocks_to_slack(
         self,
         report_blocks: List[BaseBlock],
         report_attachment_blocks: List[BaseBlock],
-        title: str,
-        slack_channel: str,
-        unfurl: bool,
-        sink_name: str,
     ):
-        file_blocks = add_pngs_for_all_svgs(
-            [b for b in report_blocks if isinstance(b, FileBlock)]
-        )
         other_blocks = [b for b in report_blocks if not isinstance(b, FileBlock)]
-
-        message = self.prepare_slack_text(title, file_blocks)
-
-        output_blocks = []
-        if title:
-            output_blocks.extend(self.__to_slack(HeaderBlock(title), sink_name))
         for block in other_blocks:
-            output_blocks.extend(self.__to_slack(block, sink_name))
-        attachment_blocks = []
+            self.__to_slack(block)
         for block in report_attachment_blocks:
-            attachment_blocks.extend(self.__to_slack(block, sink_name))
-
-        logging.debug(
-            f"--sending to msteams--\n"
-            f"title:{title}\n"
-            f"blocks: {output_blocks}\n"
-            f"attachment_blocks: {report_attachment_blocks}\n"
-            f"message:{message}"
-        )
-
-        try:
-            self.myTeamsMessage.send()
-
-        except Exception as e:
-            logging.error(
-                f"error sending message to msteams\ne={e}\ntext={message}\nblocks={output_blocks}\nattachment_blocks={attachment_blocks}"
-            )
+            self.__to_slack(block)
 
     def __create_new_card(self, title: str, description: str):
         self.msteams_implementation = MsTeamsImplementation(self.msteams_hookurl, title, description)        
 
-    def send_finding_to_slack(
-        self, finding: Finding, slack_channel: str, sink_name: str):
+    def __prepare_msteams_card(self, finding: Finding):
         blocks: List[BaseBlock] = []
         # first add finding description block
         if finding.description:
@@ -149,23 +112,27 @@ class MsTeamskSender:
 
         self.__create_new_card(finding.title, finding.description)
 
-        unfurl = True
+
+    def send_finding_to_slack(self, finding: Finding, slack_channel: str, sink_name: str):
+
+        self.__prepare_msteams_card(finding)
+
         for enrichment in finding.enrichments:
             
+            blocks: List[BaseBlock] = []
             attachment_blocks: List[BaseBlock] = []
 
-            # if one of the enrichment specified unfurl=False, this slack message will contain unfurl=False
-            unfurl = unfurl and enrichment.annotations.get(
-                SlackAnnotations.UNFURL, True
-            )
             if enrichment.annotations.get(SlackAnnotations.ATTACHMENT):
                 attachment_blocks.extend(enrichment.blocks)
             else:
                 blocks.extend(enrichment.blocks)
             
-            self.__send_blocks_to_slack(
-                blocks, attachment_blocks, finding.title, slack_channel, unfurl, sink_name)
-            
+            self.__send_blocks_to_slack(blocks, attachment_blocks)
+
+            self.__upload_files(blocks)
+
             self.msteams_implementation.new_card_section()
+
+        self.msteams_implementation.send()
 
         
