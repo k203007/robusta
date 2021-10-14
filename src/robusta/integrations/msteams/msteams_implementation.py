@@ -56,18 +56,18 @@ class MsTeamsImplementation:
         self.current_section_string += data + '\n\n'
 
 
-    def __markdown_block(self, card: pymsteams.connectorcard, block: BaseBlock):
+    def markdown_block(self, card: pymsteams.connectorcard, block: BaseBlock):
         if not block.text:
             return
         self.current_section_string += self.__apply_length_limit(block.text) + '\n\n'
 
-    def __divider_block(self, card: pymsteams.connectorcard, block: BaseBlock):
+    def divider_block(self, card: pymsteams.connectorcard, block: BaseBlock):
         self.current_section_string += '\n\n'
 
-    def __header_block(self, card: pymsteams.connectorcard, block: BaseBlock):
+    def header_block(self, card: pymsteams.connectorcard, block: BaseBlock):
         self.current_header_string += self.__apply_length_limit(block.text, 150) + '\n\n'
 
-    def __get_action_block_for_choices(self, card: pymsteams.connectorcard, choices: Dict[str, Callable] = None, context=""):
+    def get_action_block_for_choices(self, card: pymsteams.connectorcard, choices: Dict[str, Callable] = None, context=""):
         if choices is None:
           return
         '''
@@ -91,7 +91,7 @@ class MsTeamsImplementation:
         return [{"type": "actions", "elements": buttons}]
         '''
 
-    def __apply_length_limit(self, msg: str, max_length: int = 3000):
+    def apply_length_limit(self, msg: str, max_length: int = 3000):
         if len(msg) <= max_length:
             return msg
         truncator = "..."

@@ -20,13 +20,13 @@ class MsTeamskSender:
 
     def __to_msteams(self, block: BaseBlock):
         if isinstance(block, MarkdownBlock):
-            self.msteams_implementation.__markdown_block(self.myTeamsMessage, block)
+            self.msteams_implementation.markdown_block(self.myTeamsMessage, block)
         elif isinstance(block, DividerBlock):
-            self.msteams_implementation.__divider_block(self.myTeamsMessage, block)
+            self.msteams_implementation.divider_block(self.myTeamsMessage, block)
         elif isinstance(block, FileBlock):
             raise AssertionError("to_msteams() should never be called on a FileBlock")
         elif isinstance(block, HeaderBlock):
-            self.msteams_implementation.__header_block(self.myTeamsMessage, block)
+            self.msteams_implementation.header_block(self.myTeamsMessage, block)
         elif isinstance(block, ListBlock) or isinstance(block, TableBlock):
             self.__to_msteams(block.to_markdown())
         elif isinstance(block, KubernetesDiffBlock):
@@ -34,7 +34,7 @@ class MsTeamskSender:
         elif isinstance(block, CallbackBlock):
             context = block.context.copy()
             context["target_id"] = TARGET_ID
-            self.msteams_implementation.__get_action_block_for_choices(self.myTeamsMessage,
+            self.msteams_implementation.get_action_block_for_choices(self.myTeamsMessage,
                 block.choices, json.dumps(context)
             )
         else:
