@@ -50,6 +50,14 @@ class MsTeamsImplementation:
             logging.error(f"error sending message to msteams\ne={e}\n")
         
 
+    def diff(self, block: KubernetesDiffBlock):
+        data = ''
+        for d in block.diffs:
+            data = f"*{d.formatted_path}*: {d.other_value} :arrow_right: {d.value}"
+            data += '\n'
+        self.current_section_string += data + '\n\n'
+
+
     def __markdown_block(self, card: pymsteams.connectorcard, block: BaseBlock):
         if not block.text:
             return
