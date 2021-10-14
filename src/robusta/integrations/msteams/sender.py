@@ -20,7 +20,7 @@ class MsTeamskSender:
     def __init__(self, msteams_hookurl: str):
         self.msteams_hookurl = msteams_hookurl
 
-    def __to_slack(self, block: BaseBlock, sink_name: str) -> List[MsTeamsBlock]:        
+    def __to_slack(self, block: BaseBlock):
         if isinstance(block, MarkdownBlock):
             self.msteams_implementation.__markdown_block(self.myTeamsMessage, block)
         elif isinstance(block, DividerBlock):
@@ -30,42 +30,19 @@ class MsTeamskSender:
         elif isinstance(block, HeaderBlock):
             self.msteams_implementation.__header_block(self.myTeamsMessage, block)
         elif isinstance(block, ListBlock) or isinstance(block, TableBlock):
-            return self.__to_slack(block.to_markdown(), sink_name)
+            self.__to_slack(block.to_markdown())
         elif isinstance(block, KubernetesDiffBlock):
-            return self.__to_slack_diff(self.myTeamsMessage, block)
+            self.msteams_implementation.diff(self.myTeamsMessage, block)
         elif isinstance(block, CallbackBlock):
             context = block.context.copy()
             context["target_id"] = TARGET_ID
-            context["sink_name"] = sink_name
-            return self.msteams_implementation.__get_action_block_for_choices(self.myTeamsMessage,
+            self.msteams_implementation.__get_action_block_for_choices(self.myTeamsMessage,
                 block.choices, json.dumps(context)
             )
         else:
             logging.error(
                 f"cannot convert block of type {type(block)} to slack format block: {block}"
             )
-            return []  # no reason to crash the entire report
-
-    def __to_slack_diff(self, card: pymsteams.connectorcard, block: KubernetesDiffBlock, sink_name: str) -> List[MsTeamsBlock]:
-      # this can happen when a block.old=None or block.new=None - e.g. the resource was added or deleted
-      if not block.diffs:
-          return []
-
-      slack_blocks = []
-      slack_blocks.extend(
-          self.__to_slack(
-              ListBlock(
-                  [
-                      f"*{d.formatted_path}*: {d.other_value} :arrow_right: {d.value}"
-                      for d in block.diffs
-                  ]
-              ),
-              sink_name,
-          )
-      )
-
-      return slack_blocks
-
 
     def __upload_file_to_slack(self, block: FileBlock) -> str:
         """Upload a file to slack and return a link to it"""
