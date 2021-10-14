@@ -2,8 +2,10 @@ from pydantic.main import BaseModel
 
 from ..sink_config import SinkConfigBase
 from ....integrations.msteams import MsTeamskSender
+from ....integrations.msteams import MsTeamsImplementation
 from ...reporting.blocks import Finding
 from ..sink_base import SinkBase
+import logging
 
 
 class MsTeamsSinkConfig(BaseModel):
@@ -17,5 +19,9 @@ class MsTeamsSink(SinkBase):
         self.sink_name = 'MsTeams'
 
     def write_finding(self, finding: Finding):
-        msTeamskSender = MsTeamskSender(self.msteams_hookurl)
-        msTeamskSender.send_finding_to_msteams(finding)
+        try:
+            msteams_implementation = MsTeamsImplementation(self.msteams_hookurl, finding.title, finding.description)
+            msTeamskSender = MsTeamskSender()
+            msTeamskSender.send_finding_to_msteams(msteams_implementation, finding)
+        except Exception as e:
+            logging.error(f"error in MsTeams Channel: {e}")

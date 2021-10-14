@@ -1,7 +1,6 @@
 import json
 import logging
 import tempfile
-import pymsteams
 
 from .msteams_implementation import *
 from ...core.model.events import *
@@ -15,9 +14,6 @@ MsTeamsBlock = Dict[str, Any]
 
 class MsTeamskSender:
     msteams_hookurl = ''
-    def __init__(self, msteams_hookurl: str):
-        self.msteams_hookurl = msteams_hookurl
-
     def __to_msteams(self, block: BaseBlock):
         if isinstance(block, MarkdownBlock):
             self.msteams_implementation.markdown_block(self.myTeamsMessage, block)
@@ -77,22 +73,8 @@ class MsTeamskSender:
         for block in report_attachment_blocks:
             self.__to_msteams(block)
 
-    def __create_new_card(self, title: str, description: str):
-        self.msteams_implementation = MsTeamsImplementation(self.msteams_hookurl, title, description)        
-
-    def __prepare_msteams_card(self, finding: Finding):
-        blocks: List[BaseBlock] = []
-        # first add finding description block
-        if finding.description:
-            blocks.append(MarkdownBlock(finding.description))
-
-        self.__create_new_card(finding.title, finding.description)
-
-
-    def send_finding_to_msteams(self, finding: Finding):
-
-        self.__prepare_msteams_card(finding)
-
+    def send_finding_to_msteams(self, msteams_implementation: MsTeamsImplementation, finding: Finding):
+        self.msteams_implementation = msteams_implementation
         for enrichment in finding.enrichments:
             
             blocks: List[BaseBlock] = []
