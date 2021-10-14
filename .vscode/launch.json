@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "/app/robusta/runner/main.py",
+            "console": "integratedTerminal",
+            "cwd": "/app/robusta/runner"
+        }
+    ]
+}
