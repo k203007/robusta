@@ -18,6 +18,4 @@ class MsTeamsSink(SinkBase):
 
     def write_finding(self, finding: Finding):
         msTeamskSender = MsTeamskSender(self.msteams_hookurl)
-        msTeamskSender.send_finding_to_slack(
-            finding, self.slack_channel, self.sink_name
-        )
+        msTeamskSender.send_finding_to_msteams(finding)

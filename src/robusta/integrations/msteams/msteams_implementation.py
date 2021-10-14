@@ -3,8 +3,6 @@ import logging
 import tempfile
 import pymsteams
 
-from hikaru import DiffType
-
 from ...core.model.events import *
 from ...core.reporting.blocks import *
 from ...core.reporting.utils import add_pngs_for_all_svgs
