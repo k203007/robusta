@@ -1,12 +1,14 @@
 {
     "configurations": [
+
         {
-            "name": "Python: Current File",
+            "name": "runnning python",
             "type": "python",
             "request": "launch",
-            "program": "/app/robusta/runner/main.py",
+            "program": "/app/robusta/runner/debug_main.py",
             "console": "integratedTerminal",
-            "cwd": "/app/robusta/runner"
+            "cwd": "/app/robusta/runner",
+            "args" : []
         }
     ]
 }
