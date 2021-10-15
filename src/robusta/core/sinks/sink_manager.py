@@ -5,6 +5,7 @@ from .datadog.datadog_sink import DataDogSink
 from .kafka.kafka_sink import KafkaSink
 from .robusta.robusta_sink import RobustaSink
 from .slack.slack_sink import SlackSink
+from .msteams.msteams_sink import MsTeamsSink
 from .sink_config import SinkConfigBase
 from .sink_base import SinkBase
 from ..reporting.consts import SinkType
@@ -33,6 +34,8 @@ class SinkManager:
                 )
             elif sink_config.sink_type == SinkType.SLACK.value:
                 SinkManager.sinks[sink_config.sink_name] = SlackSink(sink_config)
+            elif sink_config.sink_type == SinkType.MSTEAMS.value:
+                SinkManager.sinks[sink_config.sink_name] = MsTeamsSink(sink_config)
             else:
                 raise Exception(f"Sink not supported {sink_config.sink_type}")
         except Exception as e:

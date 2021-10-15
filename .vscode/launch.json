@@ -7,10 +7,9 @@
             "request": "launch",
             "module": "robusta.runner.debug_main",
             "console": "integratedTerminal",
+            // "stopOnEntry": true,
             "justMyCode": false
-
-
-/*            "args" : ["-m"] */
+            // "args" : ["-m"] 
         }
     ]
 }
