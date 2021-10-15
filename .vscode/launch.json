@@ -5,10 +5,12 @@
             "name": "runnning python",
             "type": "python",
             "request": "launch",
-            "program": "/app/robusta/runner/debug_main.py",
+            "module": "robusta.runner.debug_main",
             "console": "integratedTerminal",
-            "cwd": "/app/robusta/runner",
-            "args" : []
+            "justMyCode": false
+
+
+/*            "args" : ["-m"] */
         }
     ]
 }

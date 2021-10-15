@@ -1,9 +1,8 @@
 import logging
 import os
 import os.path
+import sys
 from inspect import getmembers
-
-
 
 from ..core.reporting.blocks import Finding
 from ..core.sinks.msteams.msteams_sink import MsTeamsSink,MsTeamsSinkConfig
@@ -15,7 +14,7 @@ print('*** running ***')
 
 def main():
 
-    finding = Finding()
+    finding = Finding('some title')
     finding.title = 'test'
     finding.description = 'this is a short desc\nanother line'
 
