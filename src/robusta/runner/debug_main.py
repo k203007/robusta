@@ -4,7 +4,7 @@ import os
 import os.path
 from inspect import getmembers
 
-from src.robusta.core.reporting.blocks import Enrichment
+from src.robusta.core.reporting.blocks import DividerBlock, Enrichment
 
 os.chdir('/app/robusta/runner')
 
@@ -20,13 +20,15 @@ def main():
 
     finding = Finding('some title')
     finding.title = 'test'
-    finding.description = 'this is a short desc\n\\nanother line'
+    finding.description = 'this is a short desc\n\nanother line'
 
     markdown = MarkdownBlock('markdown text<br><br>11111\n2222')    
-    enrichment = Enrichment([markdown])
+    markdown2 = MarkdownBlock('3333')    
+    divider = DividerBlock()
+    enrichment = Enrichment([markdown,divider,markdown2])
     finding.enrichments.append(enrichment)
 
-    markdown = MarkdownBlock('markdown text 22222<br><br>11111\n2222')
+    markdown = MarkdownBlock('markdown text 22222<br><br>11111\n2222')    
     enrichment = Enrichment([markdown])
     finding.enrichments.append(enrichment)
 
