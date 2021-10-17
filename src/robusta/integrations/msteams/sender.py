@@ -16,17 +16,17 @@ class MsTeamskSender:
     msteams_hookurl = ''
     def __to_msteams(self, block: BaseBlock):
         if isinstance(block, MarkdownBlock):
-            self.msteams_implementation.markdown_block(self.myTeamsMessage, block)
+            self.msteams_implementation.markdown_block(block)
         elif isinstance(block, DividerBlock):
-            self.msteams_implementation.divider_block(self.myTeamsMessage, block)
+            self.msteams_implementation.divider_block(block)
         elif isinstance(block, FileBlock):
             raise AssertionError("to_msteams() should never be called on a FileBlock")
         elif isinstance(block, HeaderBlock):
-            self.msteams_implementation.header_block(self.myTeamsMessage, block)
+            self.msteams_implementation.header_block(block)
         elif isinstance(block, ListBlock) or isinstance(block, TableBlock):
             self.__to_msteams(block.to_markdown())
         elif isinstance(block, KubernetesDiffBlock):
-            self.msteams_implementation.diff(self.myTeamsMessage, block)
+            self.msteams_implementation.diff(block)
         elif isinstance(block, CallbackBlock):
             context = block.context.copy()
             context["target_id"] = TARGET_ID

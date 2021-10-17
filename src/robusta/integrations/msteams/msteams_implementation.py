@@ -20,7 +20,7 @@ class MsTeamsImplementation:
     def __init__(self, msteams_hookurl: str, title: str, description: str):
         try:
             self.myTeamsMessage = pymsteams.connectorcard(msteams_hookurl)
-            self.myTeamsMessage.title(title)
+            self.myTeamsMessage.title(title)            
             if description is not None:
                 self.myTeamsMessage.text(description)  
         except Exception as e:
@@ -29,6 +29,7 @@ class MsTeamsImplementation:
 
     def new_card_section(self):
         section = pymsteams.cardsection()
+        section.activityImage("http://i.imgur.com/c4jt321l.png")
         if self.current_header_string != '':
             section.activityTitle(self.current_section_string)
         if self.current_section_string != '':
@@ -56,18 +57,18 @@ class MsTeamsImplementation:
         self.current_section_string += data + '\n\n'
 
 
-    def markdown_block(self, card: pymsteams.connectorcard, block: BaseBlock):
+    def markdown_block(self, block: BaseBlock):
         if not block.text:
             return
         self.current_section_string += self.__apply_length_limit(block.text) + '\n\n'
 
-    def divider_block(self, card: pymsteams.connectorcard, block: BaseBlock):
+    def divider_block(self, block: BaseBlock):
         self.current_section_string += '\n\n'
 
-    def header_block(self, card: pymsteams.connectorcard, block: BaseBlock):
+    def header_block(self, block: BaseBlock):
         self.current_header_string += self.__apply_length_limit(block.text, 150) + '\n\n'
 
-    def get_action_block_for_choices(self, card: pymsteams.connectorcard, choices: Dict[str, Callable] = None, context=""):
+    def get_action_block_for_choices(self, choices: Dict[str, Callable] = None, context=""):
         if choices is None:
           return
         '''
@@ -91,7 +92,7 @@ class MsTeamsImplementation:
         return [{"type": "actions", "elements": buttons}]
         '''
 
-    def apply_length_limit(self, msg: str, max_length: int = 3000):
+    def __apply_length_limit(self, msg: str, max_length: int = 3000):
         if len(msg) <= max_length:
             return msg
         truncator = "..."
