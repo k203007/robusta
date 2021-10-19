@@ -33,6 +33,7 @@ class MsTeamsAdaptiveCard:
                                 "$schema":"http://adaptivecards.io/schemas/adaptive-card.json",
                                 "type":"AdaptiveCard",
                                 "version":"1.2",
+                                "msTeams": {{ "width": "full" }},
                                 "body":[
                                     {0}  
                                 ]
