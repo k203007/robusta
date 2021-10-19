@@ -1,5 +1,14 @@
 
 from enum import Enum
+from typing import Awaitable
+
+
+class CardElements(Enum):
+    TEXT = 'text',
+    IMAGE = 'image',
+    SECTION = 'section'
+    
+
 
 
 class AdaptiveCardFontSize(Enum):
@@ -11,42 +20,40 @@ class AdaptiveCardFontSize(Enum):
 
 class MsTeamsAdaptiveCard:
 
-    def setBody(self, body : str):
-        __BODY =  """{
+    curr_card = ''
+
+    def get_msg(self):
+        __BODY =  """{{
                         "type":"message",
                         "attachments":[
-                        {
+                        {{
                             "contentType":"application/vnd.microsoft.card.adaptive",
                             "contentUrl":null,
-                            "content":{
+                            "content":{{
                                 "$schema":"http://adaptivecards.io/schemas/adaptive-card.json",
                                 "type":"AdaptiveCard",
                                 "version":"1.2",
                                 "body":[
                                     {0}  
                                 ]
-                            }
-                        }
-                    }"""
-
-        return body.format(body)
-
+                            }}
+                        }}
+                        ]
+                    }}"""
+        print(__BODY.format(self.curr_card))
+        return __BODY.format(self.curr_card)
 
     def set_text_block(self, text : str, font_size : AdaptiveCardFontSize):
-        block = ''' {
+        block = ''' {{
                 "type": "TextBlock",
                 "text": "{0}",
                 "size": "{1}"
-                } '''
-        return block.format(text, font_size.value)
+                }}, '''
+        self.curr_card += block.format(text, font_size.value)
 
-    def set_image(self, url: str, ):
-        block = '''  {
-                "type": "Image",
-                "url": "{0}",
-                "size": "large"
-                } '''
-        return block.format(url)
+    def new_section(self):
+        pass
 
-    def set_devider(self):
-        return ''
+
+    def set_image(self):
+        pass

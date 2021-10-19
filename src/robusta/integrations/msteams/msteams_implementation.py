@@ -1,15 +1,15 @@
 import json
 import logging
 import tempfile
-import pymsteams
+import requests
 
+from .msteams_adaptive_card import AdaptiveCardFontSize,MsTeamsAdaptiveCard
 from ...core.model.events import *
 from ...core.reporting.blocks import *
 from ...core.reporting.utils import add_pngs_for_all_svgs
 from ...core.reporting.callbacks import PlaybookCallbackRequest
 from ...core.reporting.consts import SlackAnnotations
 from ...core.model.env_vars import TARGET_ID
-from .msteams_adaptive_card import MsTeamsAdaptiveCard
 
 ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 MsTeamsBlock = Dict[str, Any]
@@ -17,25 +17,26 @@ MsTeamsBlock = Dict[str, Any]
 class MsTeamsImplementation:
     current_header_string = ''
     current_section_string = ''
+    msteams_hookurl = ''
 
     def __init__(self, msteams_hookurl: str, title: str, description: str):
         try:
-            self.adaptive_card = MsTeamsAdaptiveCard()
-
-            self.adaptive_card.set_text_block(self.__new_line_replacer(title))
+            self.msteams_hookurl = msteams_hookurl
+            self.myTeamsMessage = MsTeamsAdaptiveCard()
+            self.myTeamsMessage.set_text_block(title, AdaptiveCardFontSize.EXTRA_LARGE)
             if description is not None:
-                self.adaptive_card.set_text_block(self.__new_line_replacer(description))
+                self.myTeamsMessage.set_text_block(description, AdaptiveCardFontSize.MEDIUM)
         except Exception as e:
-            logging.error(f"Cannot connect to MsTeams Channel: {e}")
+            logging.error(f"Error creating MsTeamsAdaptiveCard: {e}")
             raise e
 
     def new_card_section(self):
-        section = pymsteams.cardsection()
-        section.activityImage("http://i.imgur.com/c4jt321l.png")
         if self.current_header_string != '':
-            section.activityTitle(self.__new_line_replacer(self.current_section_string))
+            pass
+            #self..activityTitle(self.__new_line_replacer(self.current_section_string))
         if self.current_section_string != '':
-            section.activityText(self.__new_line_replacer(self.current_section_string))
+            pass
+            #section.activityText(self.__new_line_replacer(self.current_section_string))
 
         if self.current_section_string == '' and self.current_header_string == '':
             return
@@ -46,7 +47,8 @@ class MsTeamsImplementation:
 
     def send(self):
         try:
-            self.myTeamsMessage.send()
+            response = requests.post(self.msteams_hookurl, data = self.myTeamsMessage.get_msg())
+            print(response)
         except Exception as e:
             logging.error(f"error sending message to msteams\ne={e}\n")
         
