@@ -40,5 +40,13 @@ class MsTeamsAdaptiveCard:
                 } '''
         return block.format(text, font_size.value)
 
-    def set_image(self):
-        pass
+    def set_image(self, url: str, ):
+        block = '''  {
+                "type": "Image",
+                "url": "{0}",
+                "size": "large"
+                } '''
+        return block.format(url)
+
+    def set_devider(self):
+        return ''

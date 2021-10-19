@@ -9,6 +9,7 @@ from ...core.reporting.utils import add_pngs_for_all_svgs
 from ...core.reporting.callbacks import PlaybookCallbackRequest
 from ...core.reporting.consts import SlackAnnotations
 from ...core.model.env_vars import TARGET_ID
+from .msteams_adaptive_card import MsTeamsAdaptiveCard
 
 ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 MsTeamsBlock = Dict[str, Any]
@@ -19,10 +20,11 @@ class MsTeamsImplementation:
 
     def __init__(self, msteams_hookurl: str, title: str, description: str):
         try:
-            self.myTeamsMessage = pymsteams.connectorcard(msteams_hookurl)
-            self.myTeamsMessage.title(self.__new_line_replacer(title))            
+            self.adaptive_card = MsTeamsAdaptiveCard()
+
+            self.adaptive_card.set_text_block(self.__new_line_replacer(title))
             if description is not None:
-                self.myTeamsMessage.text(self.__new_line_replacer(description))  
+                self.adaptive_card.set_text_block(self.__new_line_replacer(description))
         except Exception as e:
             logging.error(f"Cannot connect to MsTeams Channel: {e}")
             raise e
