@@ -10,10 +10,6 @@ class AdaptiveCardFontSize(Enum):
 
 
 class MsTeamsAdaptiveCard:
-    FONT_SIZE_SMALL = "small"
-    "medium"
-    "large"
-    "extraLarge"'
 
     def setBody(self, body : str):
         __BODY =  """{
