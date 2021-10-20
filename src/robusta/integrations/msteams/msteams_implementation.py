@@ -15,7 +15,7 @@ ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 MsTeamsBlock = Dict[str, Any]
 
 class MsTeamsImplementation:
-    current_header_string = ''
+    current_body_string = ''
     current_section_string = ''
     msteams_hookurl = ''
 
@@ -31,22 +31,22 @@ class MsTeamsImplementation:
             raise e
 
     def new_card_section(self):
-        if self.current_header_string != '':
-            pass
-            #self..activityTitle(self.__new_line_replacer(self.current_section_string))
+        # write previous section
+        self.__write_section_to_card()
+        current_section_string = ''
+
+    def __write_section_to_card(self):
         if self.current_section_string != '':
-            pass
-            #section.activityText(self.__new_line_replacer(self.current_section_string))
-
-        if self.current_section_string == '' and self.current_header_string == '':
             return
+        self.current_body_string += self.myTeamsMessage.get_section_separator()
+        self.current_body_string += self.current_section_string
 
-        self.myTeamsMessage.addSection(section)
-        self.current_header_string = ''
-        self.current_section_string = ''
+    def upload_files(self, file_blocks: list[FileBlock]):        
+        pass
 
     def send(self):
         try:
+            self.__write_section_to_card()
             response = requests.post(self.msteams_hookurl, data = self.myTeamsMessage.get_msg())
             print(response)
         except Exception as e:
@@ -70,7 +70,8 @@ class MsTeamsImplementation:
         self.current_section_string += self.__new_line_replacer('\n\n')
 
     def header_block(self, block: BaseBlock):
-        self.current_header_string += self.__apply_length_limit(block.text, 150) + self.__new_line_replacer('\n\n')
+        current_header_string = self.__apply_length_limit(block.text, 150) + self.__new_line_replacer('\n\n')
+        self.current_section_string += self.myTeamsMessage.get_text_block(current_header_string, AdaptiveCardFontSize.EXTRA_LARGE)
 
     def get_action_block_for_choices(self, choices: Dict[str, Callable] = None, context=""):
         if choices is None:

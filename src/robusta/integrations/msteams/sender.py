@@ -38,29 +38,17 @@ class MsTeamskSender:
                 f"cannot convert block of type {type(block)} to msteams format block: {block}"
             )
 
-    def __upload_file_to_msteams(self, block: FileBlock) -> str:
-        """Upload a file to msteams and return a link to it"""
-        # TODO: how to upload
-        with tempfile.NamedTemporaryFile() as f:
-            f.write(block.contents)
-            f.flush()
-            result = self.slack_client.files_upload(
-                title=block.filename, file=f.name, filename=block.filename
-            )
-            return result["file"]["permalink"]
-
     def __upload_files(self, report_blocks: List[BaseBlock] = []):
         file_blocks = add_pngs_for_all_svgs(
             [b for b in report_blocks if isinstance(b, FileBlock)]
         )
         if not file_blocks:
             return
-        uploaded_files = []
+        content_list = []
         for file_block in file_blocks:
-            permalink = self.__upload_file_to_msteams(file_block)
-            uploaded_files.append(f"* <{permalink} | {file_block.filename}>")
+            content_list.append(file_block.filename, file_block.contents)
+        self.msteams_implementation.upload_files(file_block)
 
-        file_references = "\n".join(uploaded_files)
 
     def __send_blocks_to_msteams(
         self,
