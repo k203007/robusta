@@ -33,13 +33,13 @@ class MsTeamsImplementation:
     def new_card_section(self):
         # write previous section
         self.__write_section_to_card()
-        current_section_string = ''
 
     def __write_section_to_card(self):
-        if self.current_section_string != '':
+        if self.current_section_string == '':
             return
-        self.current_body_string += self.myTeamsMessage.get_section_separator()
+        #self.current_body_string += self.myTeamsMessage.get_section_separator()
         self.current_body_string += self.current_section_string
+        self.current_section_string = ''
 
     def upload_files(self, file_blocks: list[FileBlock]):        
         pass
@@ -47,7 +47,7 @@ class MsTeamsImplementation:
     def send(self):
         try:
             self.__write_section_to_card()
-            response = requests.post(self.msteams_hookurl, data = self.myTeamsMessage.get_msg())
+            response = requests.post(self.msteams_hookurl, data = self.myTeamsMessage.get_msg_to_send(self.current_body_string))
             print(response)
         except Exception as e:
             logging.error(f"error sending message to msteams\ne={e}\n")
@@ -64,7 +64,9 @@ class MsTeamsImplementation:
     def markdown_block(self, block: BaseBlock):
         if not block.text:
             return
-        self.current_section_string += self.__apply_length_limit(block.text) + self.__new_line_replacer('\n\n')
+        text = self.__apply_length_limit(block.text) + self.__new_line_replacer('\n\n')
+        self.current_section_string += self.myTeamsMessage.get_text_block(text, AdaptiveCardFontSize.MEDIUM)
+        print(self.myTeamsMessage.get_text_block(text, AdaptiveCardFontSize.MEDIUM))
 
     def divider_block(self, block: BaseBlock):
         self.current_section_string += self.__new_line_replacer('\n\n')
@@ -104,5 +106,5 @@ class MsTeamsImplementation:
         return self.__new_line_replacer(msg[: max_length - len(truncator)] + truncator)
 
     def __new_line_replacer(self, text : str):
-        return text.replace('\n', '<br>')
+        return text
 

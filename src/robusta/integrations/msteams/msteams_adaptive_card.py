@@ -22,7 +22,7 @@ class MsTeamsAdaptiveCard:
 
     curr_card = ''
 
-    def get_msg(self):
+    def get_msg_to_send(self, body: str):
         __BODY =  """{{
                         "type":"message",
                         "attachments":[
@@ -41,8 +41,8 @@ class MsTeamsAdaptiveCard:
                         }}
                         ]
                     }}"""
-        print(__BODY.format(self.curr_card))
-        return __BODY.format(self.curr_card)
+
+        return __BODY.format(self.curr_card + body)
 
     def set_text_block(self, text : str, font_size : AdaptiveCardFontSize):
         block = ''' {{

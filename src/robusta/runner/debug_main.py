@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#cp -r  /usr/local/lib/python3.9/site-packages/robusta/ /workspaces/robusta/src/
 import logging
 import os
 import os.path
@@ -22,12 +23,12 @@ def main():
     finding = Finding('some title')
     finding.title = 'test'
     finding.description = 'this is a short desc\n\nanother line'
-    '''
-    markdown = MarkdownBlock('markdown text<br><br>11111\n2222')    
-    markdown2 = MarkdownBlock('3333')    
-    divider = DividerBlock()
-    enrichment = Enrichment([markdown,divider,markdown2])
+    markdown = MarkdownBlock('markdown text\n\n11111\n\n2222')
+    markdown2 = MarkdownBlock('3333\n444444')    
+    #divider = DividerBlock()
+    enrichment = Enrichment([markdown,markdown2])
     finding.enrichments.append(enrichment)
+    '''
 
     markdown = MarkdownBlock('markdown text 22222<br><br>11111\n2222')    
     enrichment = Enrichment([markdown])
