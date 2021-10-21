@@ -2,7 +2,13 @@ import json
 import logging
 import tempfile
 import requests
+import base64
 
+import tempfile
+import uuid
+
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
 from .msteams_adaptive_card import AdaptiveCardFontSize,MsTeamsAdaptiveCard
 from ...core.model.events import *
 from ...core.reporting.blocks import *
@@ -19,6 +25,7 @@ class MsTeamsImplementation:
     current_section_string = ''
     msteams_hookurl = ''
 
+
     def __init__(self, msteams_hookurl: str, title: str, description: str):
         try:
             self.msteams_hookurl = msteams_hookurl
@@ -29,6 +36,11 @@ class MsTeamsImplementation:
         except Exception as e:
             logging.error(f"Error creating MsTeamsAdaptiveCard: {e}")
             raise e
+
+    def __get_tmp_file_path():
+        tmp_dir_path = tempfile.gettempdir() 
+        return tmp_dir_path + str(uuid.uuid1())
+
 
     def new_card_section(self):
         # write previous section
@@ -41,8 +53,42 @@ class MsTeamsImplementation:
         self.current_body_string += self.current_section_string
         self.current_section_string = ''
 
+    def __file_is_image(file_name: str):
+        if (file_name.endswith('.jpg')):
+            return True
+        if (file_name.endswith('.png')):
+            return True
+        if (file_name.endswith('.svg')):
+            return True
+        return False
+
+    def __jpg_convert_bytes_to_base_64_url(bytes : bytes):
+        b64_string = base64.b64encode(bytes)
+        return 'data:image/jpeg;base64,{0}'.format(b64_string)
+
+    def __png_convert_bytes_to_base_64_url(bytes : bytes):
+        b64_string = base64.b64encode(bytes)
+        return 'data:image/png;base64,{0}'.format(b64_string)
+
+    def __svg_convert_bytes_to_jpg(self, bytes : bytes):
+        svg_file_path = self.__get_tmp_file_path()
+        with open(svg_file_path, 'wb') as f:
+            f.write(bytes)
+
+        drawing = svg2rlg(svg_file_path)
+        jpg_file_path = self.__get_tmp_file_path()
+
+        renderPM.drawToFile(drawing, jpg_file_path, fmt="JPG")
+        with open(jpg_file_path, 'rb') as f:
+            f.read(bytes)
+
+
+
+
     def upload_files(self, file_blocks: list[FileBlock]):        
-        pass
+        for file_block in file_blocks:
+            file_block.filename
+            pass
 
     def send(self):
         try:
