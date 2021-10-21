@@ -53,21 +53,32 @@ class MsTeamsImplementation:
         self.current_body_string += self.current_section_string
         self.current_section_string = ''
 
-    def __file_is_image(file_name: str):
-        if (file_name.endswith('.jpg')):
-            return True
-        if (file_name.endswith('.png')):
-            return True
-        if (file_name.endswith('.svg')):
-            return True
-        return False
+    def __file_is_jpg(self, file_name: str):
+        return file_name.endswith('.jpg')
+    def __file_is_png(self, file_name: str):
+        return file_name.endswith('.png')
+    def __file_is_png(self, file_name: str):
+        return file_name.endswith('.svg')
 
-    def __jpg_convert_bytes_to_base_64_url(bytes : bytes):
-        b64_string = base64.b64encode(bytes)
+
+    def __file_is_image(self, file_name: str):
+        return self.__file_is_jpg(file_name) \
+            or self.__file_is_png(file_name) \
+            or self.__file_is_svg(file_name) \
+
+    def __convert_bytes_to_base_64_url(self, file_name: str, bytes: bytes):
+        if self.__file_is_jpg(file_name):
+            return self.__jpg_convert_bytes_to_base_64_url(bytes)
+        if self.__file_is_png(file_name):
+            return self.__png_convert_bytes_to_base_64_url(bytes)
+        return self.__svg_convert_bytes_to_jpg(bytes)
+
+    def __jpg_convert_bytes_to_base_64_url(self, bytes : bytes):
+        b64_string = base64.b64encode(bytes).decode("utf-8") 
         return 'data:image/jpeg;base64,{0}'.format(b64_string)
 
-    def __png_convert_bytes_to_base_64_url(bytes : bytes):
-        b64_string = base64.b64encode(bytes)
+    def __png_convert_bytes_to_base_64_url(self, bytes : bytes):
+        b64_string = base64.b64encode(bytes).decode("utf-8") 
         return 'data:image/png;base64,{0}'.format(b64_string)
 
     def __svg_convert_bytes_to_jpg(self, bytes : bytes):
@@ -80,15 +91,16 @@ class MsTeamsImplementation:
 
         renderPM.drawToFile(drawing, jpg_file_path, fmt="JPG")
         with open(jpg_file_path, 'rb') as f:
-            f.read(bytes)
+            jpg_bytes = f.read(bytes)
+        return self.__jpg_convert_bytes_to_base_64_url(jpg_bytes)
 
-
-
-
-    def upload_files(self, file_blocks: list[FileBlock]):        
+    def upload_files(self, file_blocks: list[FileBlock]):
+        files = ''
         for file_block in file_blocks:
-            file_block.filename
-            pass
+            if self.__file_is_image(file_block.filename):
+                data_url = self.__convert_bytes_to_base_64_url(file_block.filename, file_block.contents)
+                files += self.myTeamsMessage.get_image(data_url)
+        self.current_body_string += files
 
     def send(self):
         try:

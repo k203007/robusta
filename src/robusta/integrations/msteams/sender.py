@@ -15,19 +15,19 @@ MsTeamsBlock = Dict[str, Any]
 class MsTeamskSender:
     msteams_hookurl = ''
     def __to_msteams(self, block: BaseBlock):
-        if isinstance(block, MarkdownBlock):
+        if self.__same_type(block, MarkdownBlock):
             self.msteams_implementation.markdown_block(block)
-        elif isinstance(block, DividerBlock):
+        elif self.__same_type(block, DividerBlock):
             self.msteams_implementation.divider_block(block)
-        elif isinstance(block, FileBlock):
+        elif self.__same_type(block, FileBlock):
             raise AssertionError("to_msteams() should never be called on a FileBlock")
-        elif isinstance(block, HeaderBlock):
+        elif self.__same_type(block, HeaderBlock):
             self.msteams_implementation.header_block(block)
-        elif isinstance(block, ListBlock) or isinstance(block, TableBlock):
+        elif self.__same_type(block, ListBlock) or isinstance(block, TableBlock):
             self.__to_msteams(block.to_markdown())
-        elif isinstance(block, KubernetesDiffBlock):
+        elif self.__same_type(block, KubernetesDiffBlock):
             self.msteams_implementation.diff(block)
-        elif isinstance(block, CallbackBlock):
+        elif self.__same_type(block, CallbackBlock):
             context = block.context.copy()
             context["target_id"] = TARGET_ID
             self.msteams_implementation.get_action_block_for_choices(self.myTeamsMessage,
@@ -38,47 +38,32 @@ class MsTeamskSender:
                 f"cannot convert block of type {type(block)} to msteams format block: {block}"
             )
 
-    def __upload_files(self, report_blocks: List[BaseBlock] = []):
-        file_blocks = add_pngs_for_all_svgs(
-            [b for b in report_blocks if isinstance(b, FileBlock)]
-        )
-        if not file_blocks:
-            return
-        content_list = []
-        for file_block in file_blocks:
-            content_list.append(file_block.filename, file_block.contents)
-        self.msteams_implementation.upload_files(file_block)
+    def __split_block_to_files_and_all_the_rest(self, enrichment : Enrichment):
+        files_blocks = []
+        other_blocks = []
 
+        for block in enrichment.blocks:
+            if self.__same_type(block,FileBlock):
+                files_blocks.append(block)
+            else:
+                other_blocks.append(block)
+        return files_blocks, other_blocks
 
-    def __send_blocks_to_msteams(
-        self,
-        report_blocks: List[BaseBlock],
-        report_attachment_blocks: List[BaseBlock],
-    ):
-        other_blocks = [b for b in report_blocks if not isinstance(b, FileBlock)]
-        for block in other_blocks:
-            self.__to_msteams(block)
-        for block in report_attachment_blocks:
-            self.__to_msteams(block)
+    def __same_type(self, var, class_type):
+        return type(var).__name__ == class_type.__name__
 
     def send_finding_to_msteams(self, msteams_implementation: MsTeamsImplementation, finding: Finding):
         self.msteams_implementation = msteams_implementation
         for enrichment in finding.enrichments:
             
-            blocks: List[BaseBlock] = []
-            attachment_blocks: List[BaseBlock] = []
-
-            # TODO: what is this ??? SlackAnnotations.ATTACHMENT
-            if enrichment.annotations.get(SlackAnnotations.ATTACHMENT):
-                attachment_blocks.extend(enrichment.blocks)
-            else:
-                blocks.extend(enrichment.blocks)
-            
-            self.__send_blocks_to_msteams(blocks, attachment_blocks)
-
-            self.__upload_files(blocks)
-
             self.msteams_implementation.new_card_section()
+            
+            files_blocks, other_blocks = self.__split_block_to_files_and_all_the_rest(enrichment)
+
+            for block in other_blocks:
+                self.__to_msteams(block)
+
+            self.msteams_implementation.upload_files(files_blocks)
 
         self.msteams_implementation.send()
 

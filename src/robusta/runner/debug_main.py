@@ -5,7 +5,7 @@ import os
 import os.path
 from inspect import getmembers
 
-from src.robusta.core.reporting.blocks import DividerBlock, Enrichment
+from src.robusta.core.reporting.blocks import DividerBlock, Enrichment, FileBlock
 from src.robusta.core.sinks.sink_config import SinkConfigBase
 
 os.chdir('/app/robusta/runner')
@@ -26,7 +26,10 @@ def main():
     markdown = MarkdownBlock('markdown text\n\n11111\n\n2222')
     markdown2 = MarkdownBlock('3333\n444444')    
     #divider = DividerBlock()
-    enrichment = Enrichment([markdown,markdown2])
+    with open('/workspaces/robusta/1.jpg', 'rb') as f:
+        bytes = f.read()
+    jpg_file = FileBlock('image.jpg', bytes)
+    enrichment = Enrichment([markdown,markdown2, jpg_file])
     finding.enrichments.append(enrichment)
     '''
 

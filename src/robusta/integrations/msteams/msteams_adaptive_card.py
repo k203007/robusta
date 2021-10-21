@@ -72,5 +72,9 @@ class MsTeamsAdaptiveCard:
         }},'''
         return block
 
-    def set_image(self):
-        pass
+    def get_image(self, data_url):
+        block = '''{{
+            "type": "Image",
+            "url": "{0}"
+        }},'''
+        return block.format(data_url)
