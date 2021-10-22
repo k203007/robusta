@@ -26,15 +26,15 @@ class MsTeamsAdaptiveCardFiles:
         image_section_str += files
         return image_section_str
 
-    def __get_tmp_file_path():
+    def __get_tmp_file_path(self):
         tmp_dir_path = tempfile.gettempdir() 
-        return tmp_dir_path + str(uuid.uuid1())
+        return tmp_dir_path + '/' + str(uuid.uuid1())
 
     def __file_is_jpg(self, file_name: str):
         return file_name.endswith('.jpg')
     def __file_is_png(self, file_name: str):
         return file_name.endswith('.png')
-    def __file_is_png(self, file_name: str):
+    def __file_is_svg(self, file_name: str):
         return file_name.endswith('.svg')
 
 
@@ -68,7 +68,7 @@ class MsTeamsAdaptiveCardFiles:
 
         renderPM.drawToFile(drawing, jpg_file_path, fmt="JPG")
         with open(jpg_file_path, 'rb') as f:
-            jpg_bytes = f.read(bytes)
+            jpg_bytes = f.read()
         return self.__jpg_convert_bytes_to_base_64_url(jpg_bytes)
 
 
@@ -99,11 +99,11 @@ class MsTeamsAdaptiveCardFiles:
         for key in self.files_keys_list:
             visible = key_to_make_visible == key
             action_toggle_str += self.__single_action_toggle(key, visible)
-        block.format(action_toggle_str)
+        return block.format(action_toggle_str)
 
     def __single_action_toggle(self, key : str, visible : bool):
         block = '''{{
-          "elementId": {0},
+          "elementId": "{0}",
           "isVisible": {1}
         }},'''
         visible_txt = 'false'
