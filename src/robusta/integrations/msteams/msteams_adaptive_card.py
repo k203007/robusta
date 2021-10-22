@@ -7,9 +7,6 @@ class CardElements(Enum):
     TEXT = 'text',
     IMAGE = 'image',
     SECTION = 'section'
-    
-
-
 
 class AdaptiveCardFontSize(Enum):
     SMALL = "small"
@@ -71,40 +68,3 @@ class MsTeamsAdaptiveCard:
         "items": []
         }},'''
         return block
-
-    def get_image_thumbnail_block_list(self, block_str_list : list[str]):
-        block = '''{{
-        "type": "ImageSet",
-        "imageSize": "large",
-        "images": [{0}]
-        }},'''
-        s = ''
-        for str_block in block_str_list:
-            s += str_block
-        return block.format(s)
-
-    def get_image_thumbnail(self, data_url):
-        block = '''{{
-            "type": "Image",
-            "url": "{0}",
-            "selectAction": {{
-                    "type": "Action.ToggleVisibility",
-                    "title": "cool link",
-                    "targetElements": [
-                    {{
-                    "elementId": "test",
-                    "isVisible": true
-                    }},
-                    ]
-            }}            
-        }},'''
-        return block.format(data_url)
-
-    def get_image(self, data_url):
-        block = '''{{
-            "type": "Image",
-            "url": "{0}",
-            "isVisible": false,
-            "id": "test",
-        }},'''
-        return block.format(data_url)

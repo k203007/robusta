@@ -9,6 +9,7 @@ import uuid
 
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
+from .msteams_adaptive_card_files import MsTeamsAdaptiveCardFiles
 from .msteams_adaptive_card import AdaptiveCardFontSize,MsTeamsAdaptiveCard
 from ...core.model.events import *
 from ...core.reporting.blocks import *
@@ -95,15 +96,7 @@ class MsTeamsImplementation:
         return self.__jpg_convert_bytes_to_base_64_url(jpg_bytes)
 
     def upload_files(self, file_blocks: list[FileBlock]):
-        files = ''
-        str_thumbnail_blocks_list = []
-        for file_block in file_blocks:
-            if self.__file_is_image(file_block.filename):
-                data_url = self.__convert_bytes_to_base_64_url(file_block.filename, file_block.contents)
-                files += self.myTeamsMessage.get_image(data_url)
-                str_thumbnail_blocks_list.append(self.myTeamsMessage.get_image_thumbnail(data_url))
-        self.current_body_string += self.myTeamsMessage.get_image_thumbnail_block_list(str_thumbnail_blocks_list)
-        self.current_body_string += files
+        self.current_body_string += MsTeamsAdaptiveCardFiles().upload_files()
 
     def send(self):
         try:

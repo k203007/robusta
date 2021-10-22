@@ -29,7 +29,10 @@ def main():
     with open('/workspaces/robusta/1.jpg', 'rb') as f:
         bytes = f.read()
     jpg_file = FileBlock('image.jpg', bytes)
-    enrichment = Enrichment([markdown,markdown2, jpg_file])
+    with open('/workspaces/robusta/2.jpg', 'rb') as f:
+        bytes = f.read()
+    jpg_file2 = FileBlock('image.jpg', bytes)
+    enrichment = Enrichment([markdown,markdown2, jpg_file, jpg_file2])
     finding.enrichments.append(enrichment)
     '''
 
