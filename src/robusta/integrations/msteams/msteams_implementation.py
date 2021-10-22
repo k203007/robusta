@@ -1,14 +1,7 @@
 import json
 import logging
-import tempfile
 import requests
-import base64
 
-import tempfile
-import uuid
-
-from svglib.svglib import svg2rlg
-from reportlab.graphics import renderPM
 from .msteams_adaptive_card_files import MsTeamsAdaptiveCardFiles
 from .msteams_adaptive_card import AdaptiveCardFontSize,MsTeamsAdaptiveCard
 from ...core.model.events import *
@@ -38,11 +31,6 @@ class MsTeamsImplementation:
             logging.error(f"Error creating MsTeamsAdaptiveCard: {e}")
             raise e
 
-    def __get_tmp_file_path():
-        tmp_dir_path = tempfile.gettempdir() 
-        return tmp_dir_path + str(uuid.uuid1())
-
-
     def new_card_section(self):
         # write previous section
         self.__write_section_to_card()
@@ -54,49 +42,9 @@ class MsTeamsImplementation:
         self.current_body_string += self.current_section_string
         self.current_section_string = ''
 
-    def __file_is_jpg(self, file_name: str):
-        return file_name.endswith('.jpg')
-    def __file_is_png(self, file_name: str):
-        return file_name.endswith('.png')
-    def __file_is_png(self, file_name: str):
-        return file_name.endswith('.svg')
-
-
-    def __file_is_image(self, file_name: str):
-        return self.__file_is_jpg(file_name) \
-            or self.__file_is_png(file_name) \
-            or self.__file_is_svg(file_name) \
-
-    def __convert_bytes_to_base_64_url(self, file_name: str, bytes: bytes):
-        if self.__file_is_jpg(file_name):
-            return self.__jpg_convert_bytes_to_base_64_url(bytes)
-        if self.__file_is_png(file_name):
-            return self.__png_convert_bytes_to_base_64_url(bytes)
-        return self.__svg_convert_bytes_to_jpg(bytes)
-
-    def __jpg_convert_bytes_to_base_64_url(self, bytes : bytes):
-        b64_string = base64.b64encode(bytes).decode("utf-8") 
-        return 'data:image/jpeg;base64,{0}'.format(b64_string)
-
-    def __png_convert_bytes_to_base_64_url(self, bytes : bytes):
-        b64_string = base64.b64encode(bytes).decode("utf-8") 
-        return 'data:image/png;base64,{0}'.format(b64_string)
-
-    def __svg_convert_bytes_to_jpg(self, bytes : bytes):
-        svg_file_path = self.__get_tmp_file_path()
-        with open(svg_file_path, 'wb') as f:
-            f.write(bytes)
-
-        drawing = svg2rlg(svg_file_path)
-        jpg_file_path = self.__get_tmp_file_path()
-
-        renderPM.drawToFile(drawing, jpg_file_path, fmt="JPG")
-        with open(jpg_file_path, 'rb') as f:
-            jpg_bytes = f.read(bytes)
-        return self.__jpg_convert_bytes_to_base_64_url(jpg_bytes)
-
     def upload_files(self, file_blocks: list[FileBlock]):
-        self.current_body_string += MsTeamsAdaptiveCardFiles().upload_files()
+        msteams_files = MsTeamsAdaptiveCardFiles()
+        self.current_body_string += msteams_files.upload_files(file_blocks)
 
     def send(self):
         try:

@@ -1,3 +1,7 @@
+import tempfile
+import base64
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
 from ...core.reporting.blocks import *
 
 
@@ -9,7 +13,7 @@ class MsTeamsAdaptiveCardFiles:
         files = ''
         str_thumbnail_blocks_list = []
         
-        self.__set_files_key_list()
+        self.__set_files_key_list(file_blocks)
         index = 0
         for file_block in file_blocks:
             if self.__file_is_image(file_block.filename):
@@ -18,8 +22,55 @@ class MsTeamsAdaptiveCardFiles:
                 files += self.__get_image(data_url, key)
                 str_thumbnail_blocks_list.append(self.__get_image_thumbnail(data_url, key))
                 index += 1
-        self.current_body_string += self.__get_image_thumbnail_block_list(str_thumbnail_blocks_list)
-        self.current_body_string += files
+        image_section_str = self.__get_image_thumbnail_block_list(str_thumbnail_blocks_list)
+        image_section_str += files
+        return image_section_str
+
+    def __get_tmp_file_path():
+        tmp_dir_path = tempfile.gettempdir() 
+        return tmp_dir_path + str(uuid.uuid1())
+
+    def __file_is_jpg(self, file_name: str):
+        return file_name.endswith('.jpg')
+    def __file_is_png(self, file_name: str):
+        return file_name.endswith('.png')
+    def __file_is_png(self, file_name: str):
+        return file_name.endswith('.svg')
+
+
+    def __file_is_image(self, file_name: str):
+        return self.__file_is_jpg(file_name) \
+            or self.__file_is_png(file_name) \
+            or self.__file_is_svg(file_name) \
+
+    def __convert_bytes_to_base_64_url(self, file_name: str, bytes: bytes):
+        if self.__file_is_jpg(file_name):
+            return self.__jpg_convert_bytes_to_base_64_url(bytes)
+        if self.__file_is_png(file_name):
+            return self.__png_convert_bytes_to_base_64_url(bytes)
+        return self.__svg_convert_bytes_to_jpg(bytes)
+
+    def __jpg_convert_bytes_to_base_64_url(self, bytes : bytes):
+        b64_string = base64.b64encode(bytes).decode("utf-8") 
+        return 'data:image/jpeg;base64,{0}'.format(b64_string)
+
+    def __png_convert_bytes_to_base_64_url(self, bytes : bytes):
+        b64_string = base64.b64encode(bytes).decode("utf-8") 
+        return 'data:image/png;base64,{0}'.format(b64_string)
+
+    def __svg_convert_bytes_to_jpg(self, bytes : bytes):
+        svg_file_path = self.__get_tmp_file_path()
+        with open(svg_file_path, 'wb') as f:
+            f.write(bytes)
+
+        drawing = svg2rlg(svg_file_path)
+        jpg_file_path = self.__get_tmp_file_path()
+
+        renderPM.drawToFile(drawing, jpg_file_path, fmt="JPG")
+        with open(jpg_file_path, 'rb') as f:
+            jpg_bytes = f.read(bytes)
+        return self.__jpg_convert_bytes_to_base_64_url(jpg_bytes)
+
 
     def __set_files_key_list(self, file_blocks):
         for file_block in file_blocks:
