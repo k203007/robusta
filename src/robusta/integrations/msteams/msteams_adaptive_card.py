@@ -86,13 +86,25 @@ class MsTeamsAdaptiveCard:
     def get_image_thumbnail(self, data_url):
         block = '''{{
             "type": "Image",
-            "url": "{0}"
+            "url": "{0}",
+            "selectAction": {{
+                    "type": "Action.ToggleVisibility",
+                    "title": "cool link",
+                    "targetElements": [
+                    {{
+                    "elementId": "test",
+                    "isVisible": true
+                    }},
+                    ]
+            }}            
         }},'''
         return block.format(data_url)
 
     def get_image(self, data_url):
         block = '''{{
             "type": "Image",
-            "url": "{0}"
+            "url": "{0}",
+            "isVisible": false,
+            "id": "test",
         }},'''
         return block.format(data_url)
