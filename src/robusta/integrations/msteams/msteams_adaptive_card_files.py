@@ -1,7 +1,9 @@
 import tempfile
 import base64
+import os
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
+from PIL import Image
 from ...core.reporting.blocks import *
 
 
@@ -18,6 +20,7 @@ class MsTeamsAdaptiveCardFiles:
         for file_block in file_blocks:
             if self.__file_is_image(file_block.filename):
                 data_url = self.__convert_bytes_to_base_64_url(file_block.filename, file_block.contents)                
+#                data_url = 'aaa'
                 key = self.files_keys_list[index]
                 files += self.__get_image(data_url, key)
                 str_thumbnail_blocks_list.append(self.__get_image_thumbnail(data_url, key))
@@ -54,10 +57,25 @@ class MsTeamsAdaptiveCardFiles:
         b64_string = base64.b64encode(bytes).decode("utf-8") 
         return 'data:image/jpeg;base64,{0}'.format(b64_string)
 
+    #msteams cant read parsing of url to 'data:image/png;base64,...
     def __png_convert_bytes_to_base_64_url(self, bytes : bytes):
-        b64_string = base64.b64encode(bytes).decode("utf-8") 
-        return 'data:image/png;base64,{0}'.format(b64_string)
+        png_file_path = self.__get_tmp_file_path() + '.png'
+        jpg_file_path = self.__get_tmp_file_path() + '.jpg'
+        with open(png_file_path, 'wb') as f:
+            f.write(bytes)
 
+        im = Image.open(png_file_path)
+        rgb_im = im.convert('RGB')
+        rgb_im.save(jpg_file_path)
+        with open(jpg_file_path, 'rb') as f:
+            jpg_bytes = f.read()
+
+        os.remove(png_file_path)
+        os.remove(jpg_file_path)
+
+        return self.__jpg_convert_bytes_to_base_64_url(jpg_bytes)
+
+    #msteams cant read parsing of url to svg image
     def __svg_convert_bytes_to_jpg(self, bytes : bytes):
         svg_file_path = self.__get_tmp_file_path()
         with open(svg_file_path, 'wb') as f:
@@ -69,6 +87,10 @@ class MsTeamsAdaptiveCardFiles:
         renderPM.drawToFile(drawing, jpg_file_path, fmt="JPG")
         with open(jpg_file_path, 'rb') as f:
             jpg_bytes = f.read()
+
+        os.remove(svg_file_path)
+        os.remove(jpg_file_path)
+
         return self.__jpg_convert_bytes_to_base_64_url(jpg_bytes)
 
 

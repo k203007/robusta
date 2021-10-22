@@ -36,7 +36,11 @@ def main():
         bytes = f.read()
     svg_file1 = FileBlock('image.svg', bytes)
 
-    enrichment = Enrichment([markdown,markdown2, jpg_file, jpg_file2, svg_file1])
+    with open('/workspaces/robusta/10.png', 'rb') as f:
+        bytes = f.read()
+    png_file1 = FileBlock('image.png', bytes)
+
+    enrichment = Enrichment([markdown,markdown2, jpg_file, jpg_file2, svg_file1, png_file1])
     finding.enrichments.append(enrichment)
     '''
 
