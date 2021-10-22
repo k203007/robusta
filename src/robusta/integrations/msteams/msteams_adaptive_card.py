@@ -72,6 +72,24 @@ class MsTeamsAdaptiveCard:
         }},'''
         return block
 
+    def get_image_thumbnail_block_list(self, block_str_list : list[str]):
+        block = '''{{
+        "type": "ImageSet",
+        "imageSize": "large",
+        "images": [{0}]
+        }},'''
+        s = ''
+        for str_block in block_str_list:
+            s += str_block
+        return block.format(s)
+
+    def get_image_thumbnail(self, data_url):
+        block = '''{{
+            "type": "Image",
+            "url": "{0}"
+        }},'''
+        return block.format(data_url)
+
     def get_image(self, data_url):
         block = '''{{
             "type": "Image",

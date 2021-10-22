@@ -96,10 +96,13 @@ class MsTeamsImplementation:
 
     def upload_files(self, file_blocks: list[FileBlock]):
         files = ''
+        str_thumbnail_blocks_list = []
         for file_block in file_blocks:
             if self.__file_is_image(file_block.filename):
                 data_url = self.__convert_bytes_to_base_64_url(file_block.filename, file_block.contents)
                 files += self.myTeamsMessage.get_image(data_url)
+                str_thumbnail_blocks_list.append(self.myTeamsMessage.get_image_thumbnail(data_url))
+        self.current_body_string += self.myTeamsMessage.get_image_thumbnail_block_list(str_thumbnail_blocks_list)
         self.current_body_string += files
 
     def send(self):
