@@ -26,7 +26,7 @@ class MsTeamskSender:
         elif self.__same_type(block, TableBlock):
             self.msteams_implementation.table(block)
         elif self.__same_type(block, ListBlock):
-            self.__to_msteams(block.to_markdown())
+            self.msteams_implementation.list_of_strings(block)
         elif self.__same_type(block, KubernetesDiffBlock):
             self.msteams_implementation.diff(block)
         elif self.__same_type(block, CallbackBlock):

@@ -49,9 +49,17 @@ class MsTeamsImplementation:
 
     def table(self, table_block : TableBlock):
         msteam_table = MsTeamsAdaptiveCardTable()
-        table = msteam_table.create_table([False, True], table_block.headers, table_block.rows)
+        table = msteam_table.create_table([False, False, False, False], table_block.headers, table_block.rows)
         print(table)
         self.current_section_string += table
+
+    def list_of_strings(self, list_block: ListBlock):
+        markdown_str_list = ''
+        for text in list_block.items:
+            markdown_str_list += '\n- ' + text + '\n'
+        list_str = self.myTeamsMessage.get_text_block(markdown_str_list, AdaptiveCardFontSize.MEDIUM)
+        self.current_section_string += list_str
+
     def send(self):
         try:
             self.__write_section_to_card()
