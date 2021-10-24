@@ -1,0 +1,67 @@
+import tempfile
+import base64
+import os
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
+from PIL import Image
+from ...core.reporting.blocks import *
+
+class MsTeamsAdaptiveCardTable:
+
+    def create_table(self, columns_weight_strech : list[bool], header_list: list[str], rows: list[list[str]]) :
+        all_columns = ''
+        for index in len(header_list):
+            column = self.__headline_cell(header_list[index], columns_weight_strech[index])
+
+            for row in rows:
+                column += self.__column_cell(row[index], columns_weight_strech[index])
+
+            all_columns += column
+        return self.__column_set(all_columns)
+        
+    def __column_set(self, all_columns : str):
+        block = '''
+        {{
+         "type":"ColumnSet",
+         "columns":[{0}]
+        }},
+        '''
+        return block.format(all_columns)
+
+    def __single_column(self, column_cells: str):
+        block = '''
+        {
+               "type":"Column",
+               "items":[{0}]
+        },
+        '''
+        return block.format(column_cells)
+
+    def __headline_cell(self, text: str, width_strech : bool):
+        block = '''
+        {
+            "type":"TextBlock",
+            "isSubtle":true,
+            "width":"{0}",
+            "text":"{1}",
+            "weight":"bolder"
+        },
+        '''
+        return block.format(self.__width(width_strech), text)
+    
+    def __column_cell(self, text: str, width_strech : bool):
+        block = '''
+        {
+            "type":"TextBlock",
+            "isSubtle":true,
+            "width":"{0}",
+            "text":"{1}",
+            "separator":true
+        },
+        '''
+        return block.format(self.__width(width_strech), text)
+
+    def __width(self, width_strech : bool):
+        if width_strech:
+            return 'strech'
+        return 'auto'

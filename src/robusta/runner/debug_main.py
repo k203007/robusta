@@ -40,7 +40,7 @@ def main():
         bytes = f.read()
     png_file1 = FileBlock('image.png', bytes)
 
-    enrichment = Enrichment([markdown,markdown2, jpg_file, jpg_file2, svg_file1, png_file1])
+    enrichment = Enrichment([markdown,markdown2, jpg_file, jpg_file2, svg_file1, png_file1,jpg_file])
     finding.enrichments.append(enrichment)
     '''
 
