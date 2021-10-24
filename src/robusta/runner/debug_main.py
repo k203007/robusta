@@ -5,7 +5,7 @@ import os
 import os.path
 from inspect import getmembers
 
-from src.robusta.core.reporting.blocks import DividerBlock, Enrichment, FileBlock
+from src.robusta.core.reporting.blocks import DividerBlock, Enrichment, FileBlock, TableBlock, KubernetesDiffBlock
 from src.robusta.core.sinks.sink_config import SinkConfigBase
 
 os.chdir('/app/robusta/runner')
@@ -40,7 +40,9 @@ def main():
         bytes = f.read()
     png_file1 = FileBlock('image.png', bytes)
 
-    enrichment = Enrichment([markdown,markdown2, jpg_file, jpg_file2, svg_file1, png_file1,jpg_file])
+    table = TableBlock([['row11', 'row12'],['row21', 'row22']], ['header1', 'header2'])
+
+    enrichment = Enrichment([table, markdown,markdown2, jpg_file, jpg_file2, svg_file1, png_file1,jpg_file])
     finding.enrichments.append(enrichment)
     '''
 

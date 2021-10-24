@@ -23,7 +23,9 @@ class MsTeamskSender:
             raise AssertionError("to_msteams() should never be called on a FileBlock")
         elif self.__same_type(block, HeaderBlock):
             self.msteams_implementation.header_block(block)
-        elif self.__same_type(block, ListBlock) or isinstance(block, TableBlock):
+        elif self.__same_type(block, TableBlock):
+            self.msteams_implementation.table(block)
+        elif self.__same_type(block, ListBlock):
             self.__to_msteams(block.to_markdown())
         elif self.__same_type(block, KubernetesDiffBlock):
             self.msteams_implementation.diff(block)
