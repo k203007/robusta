@@ -50,7 +50,7 @@ class MsTeamsImplementation:
     def upload_files(self, file_blocks: list[FileBlock]):
         self.__sub_section_separator()
         msteams_files = MsTeamsAdaptiveCardFiles()
-        self.current_body_string += msteams_files.upload_files(file_blocks)
+        self.current_section_string += msteams_files.upload_files(file_blocks)
 
     def table(self, table_block : TableBlock):
         self.__sub_section_separator()
@@ -67,11 +67,9 @@ class MsTeamsImplementation:
         self.current_section_string += list_str
 
     def diff(self, block: KubernetesDiffBlock):
-        self.__sub_section_separator()
-        header_list = ['Previos Version', 'Current Version']
         rows = []
         for d in block.diffs:
-            row = f"*{d.formatted_path}*: {d.other_value} &#8594 {d.value}"
+            row = f"*{d.formatted_path}*: {d.other_value} -> {d.value}"
             rows.append(row)
         list_blocks = ListBlock(rows)
         self.list_of_strings(list_blocks)

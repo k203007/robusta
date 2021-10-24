@@ -53,7 +53,7 @@ def main():
     
     table = TableBlock([['row11', 'row12','row13', 'row14'],['row21', 'row22','row231111111111111111111111111', 'row24']], ['header1', 'header2', 'header3', 'header4'])
 
-    enrichment = Enrichment([diff, list_block, table, markdown,markdown2, jpg_file, jpg_file2, svg_file1, png_file1,jpg_file])
+    enrichment = Enrichment([diff, list_block, table, markdown,markdown2, jpg_file, jpg_file2, svg_file1, png_file1])
     finding.enrichments.append(enrichment)
     '''
 
