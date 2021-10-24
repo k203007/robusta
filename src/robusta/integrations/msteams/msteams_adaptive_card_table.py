@@ -18,7 +18,7 @@ class MsTeamsAdaptiveCardTable:
                 column += self.__column_cell(row[index], columns_weight_strech[index], first_row)
                 first_row = False
 
-            all_columns += self.__single_column(column)
+            all_columns += self.__single_column(column, columns_weight_strech[index])
         return self.__column_set(all_columns)
         
     def __column_set(self, all_columns : str):
@@ -30,26 +30,27 @@ class MsTeamsAdaptiveCardTable:
         '''
         return block.format(all_columns)
 
-    def __single_column(self, column_cells: str):
+    def __single_column(self, column_cells: str, width_strech : bool):
         block = '''
         {{
                "type":"Column",
-               "items":[{0}]
+               "width" : "{0}",
+               "items":[{1}],
         }},
         '''
-        return block.format(column_cells)
+        return block.format(self.__width(width_strech),column_cells)
 
     def __headline_cell(self, text: str, width_strech : bool):
         block = '''
         {{
             "type":"TextBlock",
             "isSubtle":true,
-            "width":"{0}",
-            "text":"{1}",
-            "weight":"bolder"
+            "text":"{0}",
+            "weight":"bolder",
+            "width111": "stretch",
         }},
         '''
-        return block.format(self.__width(width_strech), text)
+        return block.format(text)
     
     def __column_cell(self, text: str, width_strech : bool, first_row : bool):
         separator = ''
@@ -59,14 +60,14 @@ class MsTeamsAdaptiveCardTable:
         {{
             "type":"TextBlock",
             "isSubtle":true,
-            "width":"{0}",
-            "text":"{1}",
-            {2}
+            "text":"{0}",
+            "width111": "stretch",
+            {1}
         }},
         '''
-        return block.format(self.__width(width_strech), text, separator)
+        return block.format(text, separator)
 
     def __width(self, width_strech : bool):
         if width_strech:
-            return 'strech'
+            return 'stretch'
         return 'auto'

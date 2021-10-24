@@ -50,6 +50,7 @@ class MsTeamsImplementation:
     def table(self, table_block : TableBlock):
         msteam_table = MsTeamsAdaptiveCardTable()
         table = msteam_table.create_table([False, True], table_block.headers, table_block.rows)
+        print(table)
         self.current_section_string += table
     def send(self):
         try:
@@ -73,7 +74,6 @@ class MsTeamsImplementation:
             return
         text = self.__apply_length_limit(block.text) + self.__new_line_replacer('\n\n')
         self.current_section_string += self.myTeamsMessage.get_text_block(text, AdaptiveCardFontSize.MEDIUM)
-        print(self.myTeamsMessage.get_text_block(text, AdaptiveCardFontSize.MEDIUM))
 
     def divider_block(self, block: BaseBlock):
         self.current_section_string += self.__new_line_replacer('\n\n')
