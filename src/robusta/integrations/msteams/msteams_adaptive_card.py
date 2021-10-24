@@ -57,14 +57,19 @@ class MsTeamsAdaptiveCard:
                 }}, '''
         return block.format(text, font_size.value)
 
-
-
     def get_section_separator(self):
         block = '''
+        {{
+         "type":"ColumnSet",
+         "columns":[
             {{
-        "type": "Container",
-        "minHeight": "50px",
-        "style": "default",
-        "items": []
-        }},'''
+                "type":"Column",
+                "width":"stretch",
+                "items":[
+
+                ],
+            }},
+         ]
+        }},
+        '''
         return block

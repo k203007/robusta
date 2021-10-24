@@ -39,7 +39,8 @@ class MsTeamsImplementation:
     def __write_section_to_card(self):
         if self.current_section_string == '':
             return
-        #self.current_body_string += self.myTeamsMessage.get_section_separator()
+        self.current_body_string += self.myTeamsMessage.get_section_separator()
+        print(self.myTeamsMessage.get_section_separator())
         self.current_body_string += self.current_section_string
         self.current_section_string = ''
 
