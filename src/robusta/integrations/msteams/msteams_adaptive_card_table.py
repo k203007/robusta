@@ -66,4 +66,6 @@ class MsTeamsAdaptiveCardTable:
         return block.format(text, separator)
 
     def __width(self, width_strech : bool):
+        if (width_strech):
+            return 'stretch'
         return 'auto'

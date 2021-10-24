@@ -49,12 +49,7 @@ class MsTeamsImplementation:
 
     def table(self, table_block : TableBlock):
         msteam_table = MsTeamsAdaptiveCardTable()
-
-        strech_list = []
-        for ix in range(len(table_block.headers)):
-            strech_list.append(False)
-
-        table = msteam_table.create_table(strech_list, table_block.headers, table_block.rows)
+        table = msteam_table.create_table(self.__get_stretch_list_for_table(table_block.headers, False), table_block.headers, table_block.rows)
         self.current_section_string += table
 
     def list_of_strings(self, list_block: ListBlock):
@@ -64,22 +59,20 @@ class MsTeamsImplementation:
         list_str = self.myTeamsMessage.get_text_block(markdown_str_list, AdaptiveCardFontSize.MEDIUM)
         self.current_section_string += list_str
 
-    def send(self):
-        try:
-            self.__write_section_to_card()
-            response = requests.post(self.msteams_hookurl, data = self.myTeamsMessage.get_msg_to_send(self.current_body_string))
-            print(response)
-        except Exception as e:
-            logging.error(f"error sending message to msteams\ne={e}\n")
-        
-
     def diff(self, block: KubernetesDiffBlock):
-        data = ''
+        header_list = ['Previos Version', 'Current Version']
+        rows = []
         for d in block.diffs:
-            data = f"*{d.formatted_path}*: {d.other_value} :arrow_right: {d.value}"
-            data += '\n'
-        self.current_section_string += self.__new_line_replacer(data + '\n\n')
+            rows.append([d.other_value, d.value])
+        msteam_table = MsTeamsAdaptiveCardTable()
+        table = msteam_table.create_table(self.__get_stretch_list_for_table(header_list, True), header_list, rows)
+        self.current_section_string += table
 
+    def __get_stretch_list_for_table(self, header_list : list[str], stretch : bool):
+        stretch_list = []
+        for ix in range(len(header_list)):
+            stretch_list.append(stretch)
+        return stretch_list
 
     def markdown_block(self, block: BaseBlock):
         if not block.text:
@@ -117,6 +110,15 @@ class MsTeamsImplementation:
 
         return [{"type": "actions", "elements": buttons}]
         '''
+
+    def send(self):
+        try:
+            self.__write_section_to_card()
+            response = requests.post(self.msteams_hookurl, data = self.myTeamsMessage.get_msg_to_send(self.current_body_string))
+            print(response)
+        except Exception as e:
+            logging.error(f"error sending message to msteams\ne={e}\n")        
+
 
     def __apply_length_limit(self, msg: str, max_length: int = 3000):
         if len(msg) <= max_length:
