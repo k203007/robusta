@@ -57,7 +57,18 @@ class MsTeamsAdaptiveCard:
                 }}, '''
         return block.format(text, font_size.value)
 
-    def get_section_separator(self):
+    def __get_column_for_separator(self, separator: bool):
+        separator_text = 'false'
+        if separator:
+            separator_text = 'true'
+        block = '''
+            {{"type":"TextBlock","isSubtle":true,"text":" ",}},
+            {{"type":"TextBlock","isSubtle":true,"text":" ","separator": {0} }},
+
+        '''
+        return block.format(separator_text)
+
+    def __separator(self, columns_str: str):
         block = '''
         {{
          "type":"ColumnSet",
@@ -66,10 +77,18 @@ class MsTeamsAdaptiveCard:
                 "type":"Column",
                 "width":"stretch",
                 "items":[
-
+                    {0}
                 ],
             }},
          ]
         }},
         '''
-        return block
+        return block.format(columns_str)        
+
+    def get_section_separator(self):
+        return self.__separator(self.__get_column_for_separator(True))
+
+    def get_sub_section_separator(self):
+        return self.__separator(self.__get_column_for_separator(False) + 
+            self.__get_column_for_separator(False) + 
+            self.__get_column_for_separator(True))

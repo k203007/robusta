@@ -4,9 +4,11 @@ import logging
 import os
 import os.path
 from inspect import getmembers
+from typing import Container
 
 from hikaru.meta import DiffDetail, DiffType
 from hikaru.model.rel_1_16.v1.v1 import Pod
+from robusta.core import reporting
 
 from src.robusta.core.reporting.blocks import DividerBlock, Enrichment, FileBlock, ListBlock, TableBlock, KubernetesDiffBlock
 from src.robusta.core.sinks.sink_config import SinkConfigBase
@@ -44,14 +46,14 @@ def main():
     png_file1 = FileBlock('image.png', bytes)
 
     list_block = ListBlock(['item 1','item 2','item 3'])
-    '''
-    y1 = DiffDetail(DiffType.value,Pod,'diff in version',[], value='1', other_value='0')
-    y2 = DiffDetail(DiffType.value,None,'diff in version',[], value='1', other_value='0')
-    diff = KubernetesDiffBlock([y1, y2])
-    '''
+    
+    y1 = DiffDetail(DiffType.ADDED, Container.__class__,'diff in version',[], value='1', other_value='0', report='')
+    y2 = DiffDetail(DiffType.ADDED, Container.__class__,'diff in version',[], value='1', other_value='0', report='')
+    diff = KubernetesDiffBlock([y1, y2], None, None)
+    
     table = TableBlock([['row11', 'row12','row13', 'row14'],['row21', 'row22','row231111111111111111111111111', 'row24']], ['header1', 'header2', 'header3', 'header4'])
 
-    enrichment = Enrichment([list_block, table, markdown,markdown2, jpg_file, jpg_file2, svg_file1, png_file1,jpg_file])
+    enrichment = Enrichment([diff, list_block, table, markdown,markdown2, jpg_file, jpg_file2, svg_file1, png_file1,jpg_file])
     finding.enrichments.append(enrichment)
     '''
 

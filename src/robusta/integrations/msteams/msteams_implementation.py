@@ -20,7 +20,6 @@ class MsTeamsImplementation:
     current_section_string = ''
     msteams_hookurl = ''
 
-
     def __init__(self, msteams_hookurl: str, title: str, description: str):
         try:
             self.msteams_hookurl = msteams_hookurl
@@ -39,21 +38,28 @@ class MsTeamsImplementation:
     def __write_section_to_card(self):
         if self.current_section_string == '':
             return
-        self.current_body_string += self.myTeamsMessage.get_section_separator()
-        print(self.myTeamsMessage.get_section_separator())
+        self.current_body_string = self.myTeamsMessage.get_section_separator() + self.current_body_string
         self.current_body_string += self.current_section_string
         self.current_section_string = ''
 
+    def __sub_section_separator(self):
+        if self.current_section_string == '':
+            return
+        self.current_section_string += self.myTeamsMessage.get_sub_section_separator()
+
     def upload_files(self, file_blocks: list[FileBlock]):
+        self.__sub_section_separator()
         msteams_files = MsTeamsAdaptiveCardFiles()
         self.current_body_string += msteams_files.upload_files(file_blocks)
 
     def table(self, table_block : TableBlock):
+        self.__sub_section_separator()
         msteam_table = MsTeamsAdaptiveCardTable()
         table = msteam_table.create_table(self.__get_stretch_list_for_table(table_block.headers, False), table_block.headers, table_block.rows)
         self.current_section_string += table
 
     def list_of_strings(self, list_block: ListBlock):
+        self.__sub_section_separator()
         markdown_str_list = ''
         for text in list_block.items:
             markdown_str_list += '\n- ' + text + '\n'
@@ -61,13 +67,14 @@ class MsTeamsImplementation:
         self.current_section_string += list_str
 
     def diff(self, block: KubernetesDiffBlock):
+        self.__sub_section_separator()
         header_list = ['Previos Version', 'Current Version']
         rows = []
         for d in block.diffs:
-            rows.append([d.other_value, d.value])
-        msteam_table = MsTeamsAdaptiveCardTable()
-        table = msteam_table.create_table(self.__get_stretch_list_for_table(header_list, True), header_list, rows)
-        self.current_section_string += table
+            row = f"*{d.formatted_path}*: {d.other_value} &#8594 {d.value}"
+            rows.append(row)
+        list_blocks = ListBlock(rows)
+        self.list_of_strings(list_blocks)
 
     def __get_stretch_list_for_table(self, header_list : list[str], stretch : bool):
         stretch_list = []
@@ -91,26 +98,6 @@ class MsTeamsImplementation:
     def get_action_block_for_choices(self, choices: Dict[str, Callable] = None, context=""):
         if choices is None:
           return
-        '''
-        buttons = []
-        for (i, (text, callback)) in enumerate(choices.items()):
-            buttons.append(
-                {
-                    "type": "button",
-                    "text": {
-                        "type": "plain_text",
-                        "text": text,
-                    },
-                    "style": "primary",
-                    "action_id": f"{ACTION_TRIGGER_PLAYBOOK}_{i}",
-                    "value": PlaybookCallbackRequest.create_for_func(
-                        callback, context, text
-                    ).json(),
-                }
-            )
-
-        return [{"type": "actions", "elements": buttons}]
-        '''
 
     def send(self):
         try:

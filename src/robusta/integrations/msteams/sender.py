@@ -19,8 +19,6 @@ class MsTeamskSender:
             self.msteams_implementation.markdown_block(block)
         elif self.__same_type(block, DividerBlock):
             self.msteams_implementation.divider_block(block)
-        elif self.__same_type(block, FileBlock):
-            raise AssertionError("to_msteams() should never be called on a FileBlock")
         elif self.__same_type(block, HeaderBlock):
             self.msteams_implementation.header_block(block)
         elif self.__same_type(block, TableBlock):
