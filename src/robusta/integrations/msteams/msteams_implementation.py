@@ -49,8 +49,12 @@ class MsTeamsImplementation:
 
     def table(self, table_block : TableBlock):
         msteam_table = MsTeamsAdaptiveCardTable()
-        table = msteam_table.create_table([False, False, False, False], table_block.headers, table_block.rows)
-        print(table)
+
+        strech_list = []
+        for ix in range(len(table_block.headers)):
+            strech_list.append(False)
+
+        table = msteam_table.create_table(strech_list, table_block.headers, table_block.rows)
         self.current_section_string += table
 
     def list_of_strings(self, list_block: ListBlock):
