@@ -8,6 +8,12 @@ sinks_config:
       api_key: {{ .Values.slackApiKey }}
       slack_channel: {{ required "A valid .Values.slackChannel entry is required!" .Values.slackChannel }}
   {{- end }}
+  {{- if .Values.msteamsWebhookUrl }}
+  - sink_name: msteams_sink
+    sink_type: msteams
+    params:
+      msteams_hookurl: {{ .Values.msteamsWebhookUrl }}
+  {{- end }}
   {{- if .Values.robustaApiKey }}
   - sink_name: robusta_ui_sink
     sink_type: robusta
@@ -16,10 +22,13 @@ sinks_config:
   {{- end }}
 {{- end }}
 global_config:
-{{- if or .Values.slackApiKey .Values.robustaApiKey }}
+{{- if or .Values.slackApiKey .Values.robustaApiKey .Values.msteamsWebhookUrl }}
   sinks:
   {{- if .Values.slackApiKey }}
   - slack_sink
+  {{- end }}
+  {{- if .Values.msteamsWebhookUrl }}
+  - msteams_sink
   {{- end }}
   {{- if .Values.robustaApiKey }}
   - robusta_ui_sink

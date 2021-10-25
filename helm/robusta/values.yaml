@@ -5,6 +5,9 @@ clusterName: ""
 slackApiKey: ""
 slackChannel: ""
 
+# msteams integration params
+msteamsWebhookUrl: ""
+
 # robusta ui integration params
 robustaApiKey: ""
 

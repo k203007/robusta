@@ -1,0 +1,49 @@
+sinks_config:
+  - sink_name: slack_sink
+    sink_type: slack
+    params:
+      api_key: xoxb-1983089632487-2024449933031-8nvNfcMe3UjW1wqLkc2IYX3W
+      slack_channel: asaf06102021
+  - sink_name: msteams_sink
+    sink_type: msteams
+    params:
+      msteams_hookurl: https://robusta650.webhook.office.com/webhookb2/b8b2b92a-02e9-4f5b-9c6f-3b77010d9cc6@34408606-07e6-4a82-98ac-c3668f4e57f5/IncomingWebhook/5479ec3149a34b99a0c7bca141787950/82e528f7-78de-4ded-9b84-0c6eb2c4883a
+global_config:
+  sinks:
+  - slack_sink
+  cluster_name: kind-test10102021
+active_playbooks:
+  - action_params:
+      restart_reason: CrashLoopBackOff
+    name: restart_loop_reporter
+  - name: python_profiler
+  - action_params:
+      alerts_config:
+      - alert_name: KubeNodeNotReady
+        enrichers:
+        - name: AlertDefaults
+        - name: NodeAllocatableResourcesEnricher
+        - name: NodeRunningPodsEnricher
+      - alert_name: KubernetesDaemonsetMisscheduled
+        enrichers:
+        - name: AlertDefaults
+        - name: DaemonsetEnricher
+        - name: DaemonsetMisscheduledAnalysis
+      - alert_name: HostHighCpuLoad
+        enrichers:
+        - name: NodeCPUAnalysis
+        - name: GraphEnricher
+      - alert_name: HostOomKillDetected
+        enrichers:
+        - name: OOMKillerEnricher
+        - name: GraphEnricher
+      - alert_name: CPUThrottlingHigh
+        enrichers:
+        - name: GraphEnricher
+        - name: AlertDefaults
+        - name: CPUThrottlingAnalysis
+      - alert_name: KubernetesDeploymentReplicasMismatch
+        enrichers:
+        - name: DeploymentStatusEnricher
+        - name: AlertDefaults
+    name: alerts_integration
