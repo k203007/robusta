@@ -110,18 +110,23 @@ class MsTeamsAdaptiveCardFiles:
         return block.format(s)
 
     def __set_action(self, key_to_make_visible: str) -> str:
-        block = '''
+        toggle_block = '''
             "selectAction": {{
                     "type": "Action.ToggleVisibility",
                     "title": "cool link",
                     "targetElements": [{0}]
             }},
         '''
+
+        block = '''
+                    "msTeams": {{ "allowExpand": true }},
+        '''
         action_toggle_str = ''
         for key in self.files_keys_list:
             visible = key_to_make_visible == key
             action_toggle_str += self.__single_action_toggle(key, visible)
-        return block.format(action_toggle_str)
+        #return block.format(action_toggle_str)
+        return block.format()
 
     def __single_action_toggle(self, key : str, visible : bool):
         block = '''{{
