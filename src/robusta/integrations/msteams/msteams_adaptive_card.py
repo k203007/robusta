@@ -57,38 +57,22 @@ class MsTeamsAdaptiveCard:
                 }}, '''
         return block.format(text, font_size.value)
 
-    def __get_column_for_separator(self, separator: bool):
-        separator_text = 'false'
-        if separator:
-            separator_text = 'true'
+    def get_section_separator(self):
         block = '''
-            {{"type":"TextBlock","isSubtle":true,"text":" ",}},
-            {{"type":"TextBlock","isSubtle":true,"text":" ","separator": {0} }},
-
-        '''
-        return block.format(separator_text)
-
-    def __separator(self, columns_str: str):
-        block = '''
-        {{
-         "type":"ColumnSet",
-         "columns":[
+        {{"type":"ColumnSet","columns":[
             {{
-                "type":"Column",
-                "width":"stretch",
-                "items":[
-                    {0}
+                "type":"Column","width":"stretch","items":[
+                    {{"type":"TextBlock","text":" ",}},
+                    {{"type":"TextBlock","text":" ","separator": true }},
                 ],
             }},
          ]
         }},
         '''
-        return block.format(columns_str)        
-
-    def get_section_separator(self):
-        return self.__separator(self.__get_column_for_separator(True))
+        return block.format()
 
     def get_sub_section_separator(self):
-        return self.__separator(self.__get_column_for_separator(False) + 
-            self.__get_column_for_separator(False) + 
-            self.__get_column_for_separator(True))
+        line = '____________________________________'
+        space_block = '{{"type": "TextBlock","text": " ","size": "small",}},'
+        line_block = '{{"type": "TextBlock","text": "{0}","horizontalAlignment": "center","color": "accent","size": "small",}},'
+        return space_block.format() * 1 + line_block.format(line) + space_block.format() * 2
