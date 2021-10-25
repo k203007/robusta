@@ -11,7 +11,7 @@ class MsTeamsAdaptiveCardFilesText:
     open_text_list = []
     close_start_text_list = []
     close_end_text_list = []
-    text_file_presentaiton_text_list = []
+    text_file_presentaiton_text = ''
 
     action_open_text_list = []
     action_close_start_text_list = []
@@ -50,9 +50,9 @@ class MsTeamsAdaptiveCardFilesText:
         open_text_action = self.__action(visible_when_open_pressed_list)
         close_text_action = self.__action(visible_when_close_pressed_list)
 
-        open_text = self.__create_txt_block_for_open_close(self.open_key_list[index], True, 'open ' + file_name)
-        close_start = self.__create_txt_block_for_open_close(self.close_start_key_list[index], True, 'close ' + file_name)
-        close_end = self.__create_txt_block_for_open_close(self.close_end_key_list[index], True, 'close ' + file_name)
+        open_text = self.__create_txt_block_for_open_close('open ' + file_name)
+        close_start = self.__create_txt_block_for_open_close('close ' + file_name)
+        close_end = self.__create_txt_block_for_open_close('close ' + file_name)
 
         self.open_text_list.append(open_text)
         self.close_start_text_list.append(close_start)
@@ -62,6 +62,12 @@ class MsTeamsAdaptiveCardFilesText:
         self.action_close_start_text_list.append(close_text_action)
         self.action_close_end_text_list.append(close_text_action)
 
+        #print(content.decode('ascii'))
+        self.text_file_presentaiton_text += self.__present_text_file_block(self.text_file_presentaiton_key_list[index], 'TTT\nTTT\n111')
+
+        print(open_text_action)
+        print(close_text_action)
+        print(close_text_action)
 
     def __manage_all_text_to_send(self):
         block = '''
@@ -74,26 +80,28 @@ class MsTeamsAdaptiveCardFilesText:
         single_column = '''
         {{
           "type": "Column",
-          "spacing": "large",
+          "spacing": "small",
           "items": [{0}],
-          {1}
+          "isVisible": {1},
+          "id": "{2}",
+          {3}
         }},
         '''
 
         top_files_line = ''
         items_text = ''
         for index in range(len(self.open_text_list)):
-            items_text += single_column.format(self.open_text_list[index], self.action_open_text_list[index])
-            items_text += single_column.format(self.close_start_text_list[index], self.action_close_start_text_list[index])
+            items_text += single_column.format(self.open_text_list[index], 'true', self.open_key_list[index],   self.action_open_text_list[index])
+            items_text += single_column.format(self.close_start_text_list[index],  'false', self.close_start_key_list[index],self.action_close_start_text_list[index])
         top_files_line = block.format(items_text)
 
         bottom_files_line = ''
         items_text = ''
         for index in range(len(self.close_end_text_list)):
-            items_text += single_column.format(self.close_end_text_list[index], self.action_close_end_text_list[index])
+            items_text += single_column.format(self.close_end_text_list[index], 'false', self.close_end_key_list[index], self.action_close_end_text_list[index])
         bottom_files_line = block.format(items_text)
 
-        return top_files_line +  bottom_files_line
+        return top_files_line + self.text_file_presentaiton_text +  bottom_files_line
 
     def __action(self, visible_keys: list[str]):
         toggle_block = '''
@@ -105,52 +113,55 @@ class MsTeamsAdaptiveCardFilesText:
         '''
 
         single_element_block = '''
-        {{ "elementId": "{0}", "visible": {1}
+        {{ "elementId": "{0}", "isVisible": {1}
         }},
         '''
 
         all_keys_list = []
-        all_keys_list.append(self.open_key_list)
-        all_keys_list.append(self.close_start_key_list)
-        all_keys_list.append(self.close_end_key_list)
-        all_keys_list.append(self.text_file_presentaiton_key_list)
+        all_keys_list += self.open_key_list
+        all_keys_list += self.close_start_key_list
+        all_keys_list += self.close_end_key_list
+        all_keys_list += self.text_file_presentaiton_key_list
 
         elements = ''
-        for key in visible_keys:
+        for key in all_keys_list:
             vis_text = 'false'
-            if key in all_keys_list:
+            if key in visible_keys:
                 vis_text = 'true'
             elements += single_element_block.format(key, vis_text)
 
         return toggle_block.format(elements)
 
-    def __create_txt_block_for_open_close(self, key : str, visible : bool, text : str):
-        visible_text = 'false'
-        if visible:
-            visible_text = 'true'
-
+    def __create_txt_block_for_open_close(self, text : str):
         block = '''
         {{
             "type": "TextBlock",
             "text": "{0}",
             "isSubtle": false,
-            "visible" : {1},
-            "id" : "{2}",
         }},
         '''
 
-        return block.format(text, visible_text, key)
+        return block.format(text)
 
-    def __present_text_file_block(self, text : str):
+    def __present_text_file_block(self, key : str, text : str):
         block = '''
         {{
-            "type": "TextBlock",
-            "text": "<blockquote>{0}</blockquote>",
-            "visible" : false,
-            "id" : {2}
+            "type": "Container",
+            "style": "accent",
+                "isVisible" : false,
+                "id" : "{1}",
+            "items": [
+            {{
+                "type": "TextBlock",
+                "weight" : "bolder",
+                "text": "{0}",
+
+            }},
+        ],
         }},
         '''
-        pass
+        return block.format(text, key)
+
 
     def __its_txt_file(self, file_name: str):
         txt_prefix_list = ['.txt', '.json']
