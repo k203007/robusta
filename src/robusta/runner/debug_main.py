@@ -45,6 +45,8 @@ def main():
         bytes = f.read()
     png_file1 = FileBlock('image.png', bytes)
 
+    text_file = FileBlock('test.txt', b'asaf\n111\222')
+
     list_block = ListBlock(['item 1','item 2','item 3'])
     
     y1 = DiffDetail(DiffType.ADDED, Container.__class__,'diff in version',[], value='1', other_value='0', report='')
@@ -53,7 +55,7 @@ def main():
     
     table = TableBlock([['row11', 'row12','row13', 'row14'],['row21', 'row22','row231111111111111111111111111', 'row24']], ['header1', 'header2', 'header3', 'header4'])
 
-    enrichment = Enrichment([diff, list_block, table, markdown,markdown2, jpg_file, jpg_file2, svg_file1, png_file1])
+    enrichment = Enrichment([diff, list_block, table, markdown,markdown2, jpg_file, jpg_file2, svg_file1, png_file1,text_file])
     finding.enrichments.append(enrichment)
     '''
 
