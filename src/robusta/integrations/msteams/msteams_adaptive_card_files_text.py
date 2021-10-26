@@ -43,11 +43,8 @@ class MsTeamsAdaptiveCardFilesText:
         self.text_file_presentaiton_key_list.append(str(uuid.uuid4()))
 
     def __manage_blocks_for_single_file(self, index, file_name : str, content : bytes):
-        visible_when_open_pressed_list = [self.close_start_key_list[index], self.close_end_key_list[index], self.text_file_presentaiton_key_list[index]]
-        visible_when_close_pressed_list = [self.open_key_list[index]]
-
-        open_text_action = self.__action(visible_when_open_pressed_list, 'press to open')
-        close_text_action = self.__action(visible_when_close_pressed_list, 'press to close')
+        open_text_action = self.__action(index, True, 'press to open')
+        close_text_action = self.__action(index, False, 'press to close')
 
         open_text = self.__create_txt_block_for_open_close('open ' + file_name)
         close_start = self.__create_txt_block_for_open_close('close ' + file_name)
@@ -106,7 +103,7 @@ class MsTeamsAdaptiveCardFilesText:
         width = 7 * len(prefix_letters + self.file_name_list[index]) + 40
         return str(width)
 
-    def __action(self, visible_keys: list[str], title : str):
+    def __action(self, index, open : bool, title : str):
         toggle_block = '''
             "selectAction": {{
                     "type": "Action.ToggleVisibility",
@@ -120,18 +117,28 @@ class MsTeamsAdaptiveCardFilesText:
         }},
         '''
 
-        all_keys_list = []
-        all_keys_list += self.open_key_list
-        all_keys_list += self.close_start_key_list
-        all_keys_list += self.close_end_key_list
-        all_keys_list += self.text_file_presentaiton_key_list
-
         elements = ''
-        for key in all_keys_list:
-            vis_text = 'false'
-            if key in visible_keys:
-                vis_text = 'true'
-            elements += single_element_block.format(key, vis_text)
+        curr_key = self.open_key_list[index]
+        for key in self.open_key_list:
+            visible = (not open) or (curr_key != key)
+            elements += single_element_block.format(key, str(visible).lower())
+
+        curr_key = self.close_start_key_list[index]
+        for key in self.close_start_key_list:
+            visible = False
+            visible = open and (curr_key == key)
+            elements += single_element_block.format(key, str(visible).lower())
+
+        curr_key = self.close_end_key_list[index]
+        for key in self.close_end_key_list:
+            visible = False
+            visible = open and (curr_key == key)
+            elements += single_element_block.format(key, str(visible).lower())
+
+        curr_key = self.text_file_presentaiton_key_list[index]
+        for key in self.text_file_presentaiton_key_list:
+            visible = open and (curr_key == key)
+            elements += single_element_block.format(key, str(visible).lower())
 
         return toggle_block.format(elements, title)
 
@@ -173,7 +180,7 @@ class MsTeamsAdaptiveCardFilesText:
 
 
     def __its_txt_file(self, file_name: str):
-        txt_prefix_list = ['.txt', '.json']
+        txt_prefix_list = ['.txt', '.json', 'yaml']
         if file_name[-4:] in txt_prefix_list:
             return True
         return False
