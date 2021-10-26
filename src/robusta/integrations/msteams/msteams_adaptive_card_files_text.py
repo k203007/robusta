@@ -177,4 +177,3 @@ class MsTeamsAdaptiveCardFilesText:
         if file_name[-4:] in txt_prefix_list:
             return True
         return False
-11111111
