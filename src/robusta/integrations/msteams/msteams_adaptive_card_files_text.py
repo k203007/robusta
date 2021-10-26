@@ -1,4 +1,6 @@
 import uuid
+
+from .msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements, msteams_adaptive_card_elements
 from ...core.reporting.blocks import *
 
 class MsTeamsAdaptiveCardFilesText:
@@ -18,6 +20,8 @@ class MsTeamsAdaptiveCardFilesText:
     action_close_end_text_list = []
 
     file_name_list = []        
+
+    elements = MsTeamsAdaptiveCardElements()
 
     def create_files_for_presentation(self, file_blocks: list[FileBlock]):
         file_content_list = []
@@ -46,9 +50,9 @@ class MsTeamsAdaptiveCardFilesText:
         open_text_action = self.__action(index, True, 'press to open')
         close_text_action = self.__action(index, False, 'press to close')
 
-        open_text = self.__create_txt_block_for_open_close('open ' + file_name)
-        close_start = self.__create_txt_block_for_open_close('close ' + file_name)
-        close_end = self.__create_txt_block_for_open_close('close ' + file_name)
+        open_text = self.elements.text_block('***open ' + file_name + '***', isSubtle=False)
+        close_start = self.elements.text_block('***close ' + file_name + '***', isSubtle=False)
+        close_end = self.elements.text_block('***close ' + file_name + '***', isSubtle=False)
 
         self.open_text_list.append(open_text)
         self.close_start_text_list.append(close_start)
@@ -83,6 +87,7 @@ class MsTeamsAdaptiveCardFilesText:
         items_text = ''
         for index in range(len(self.open_text_list)):
             width = self.__calc_file_name_width(index)
+            xxxxxxxxxx
             items_text += single_column.format(self.open_text_list[index], 'true', self.open_key_list[index],  width,  self.action_open_text_list[index])
             items_text += single_column.format(self.close_start_text_list[index],  'false', self.close_start_key_list[index], width, self.action_close_start_text_list[index])            
         top_files_line = block.format(items_text)
@@ -104,79 +109,36 @@ class MsTeamsAdaptiveCardFilesText:
         return str(width)
 
     def __action(self, index, open : bool, title : str):
-        toggle_block = '''
-            "selectAction": {{
-                    "type": "Action.ToggleVisibility",
-                    "title": "{1}",
-                    "targetElements": [{0}]
-            }},
-        '''
-
-        single_element_block = '''
-        {{ "elementId": "{0}", "isVisible": {1}
-        }},
-        '''
-
-        elements = ''
+        elements = []
         curr_key = self.open_key_list[index]
         for key in self.open_key_list:
             visible = (not open) or (curr_key != key)
-            elements += single_element_block.format(key, str(visible).lower())
+            elements.append(self.elements.action_toggle_target_elements([key], [visible]))
 
         curr_key = self.close_start_key_list[index]
         for key in self.close_start_key_list:
             visible = False
             visible = open and (curr_key == key)
-            elements += single_element_block.format(key, str(visible).lower())
+            elements.append(self.elements.action_toggle_target_elements([key], [visible]))
 
         curr_key = self.close_end_key_list[index]
         for key in self.close_end_key_list:
             visible = False
             visible = open and (curr_key == key)
-            elements += single_element_block.format(key, str(visible).lower())
+            elements.append(self.elements.action_toggle_target_elements([key], [visible]))
 
         curr_key = self.text_file_presentaiton_key_list[index]
         for key in self.text_file_presentaiton_key_list:
             visible = open and (curr_key == key)
-            elements += single_element_block.format(key, str(visible).lower())
+            elements.append(self.elements.action_toggle_target_elements([key], [visible]))
 
-        return toggle_block.format(elements, title)
-
-    def __create_txt_block_for_open_close(self, text : str):
-        block = '''
-        {{
-            "type": "TextBlock",
-            "text": "***{0}***",
-            "isSubtle": false,
-        }},
-        '''
-
-        return block.format(text)
+        return self.elements.action (title=title, target_elements=elements)
 
     def __present_text_file_block(self, key : str, text : str):
-        text_block = '''
-            {{
-                "type": "TextBlock",
-                "weight" : "bolder",
-                "text": "{0}",
-                "wrap": true,
-            }},
-        '''
-        block = '''
-        {{
-            "type": "Container",
-            "style": "accent",
-                "isVisible" : false,
-                "id" : "{0}",
-                "bleed": true,
-            "items": [{1}]
-        }},
-        '''
-        text_blocks = ''
+        text_blocks = []
         for line in text.split('\n'):
-            text_blocks += text_block.format(line)
-
-        return block.format(key, text_blocks)
+            text_blocks.append(self.elements.text_block(text, wrap=True, weight='bolder'))
+        return self.elements(key=key, items=text_blocks)
 
 
     def __its_txt_file(self, file_name: str):

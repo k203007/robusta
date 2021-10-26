@@ -5,32 +5,23 @@ from uuid import uuid1
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 from PIL import Image
+
+from .msteams_adaptive_card_elements  import MsTeamsAdaptiveCardElements
 from ...core.reporting.blocks import *
 
 
 class MsTeamsAdaptiveCardFilesImage:
 
-    files_keys_list = []
-
+    elements = MsTeamsAdaptiveCardElements()
     def create_files_for_presentation(self, file_blocks: list[FileBlock]):
-        files = ''
-        str_thumbnail_blocks_list = []
-        
-        self.__set_files_key_list(file_blocks)
-        index = 0
+        images_list = []        
         for file_block in file_blocks:
             if not self.__file_is_image(file_block.filename):
                 continue
-            data_url = self.__convert_bytes_to_base_64_url(file_block.filename, file_block.contents)                
-#                data_url = 'aaa'
-            key = self.files_keys_list[index]
-            files += self.__get_image(data_url, key)
-            str_thumbnail_blocks_list.append(self.__get_image_thumbnail(data_url, key))
-            index += 1
+            data_url = self.__convert_bytes_to_base_64_url(file_block.filename, file_block.contents)
+            images_list.append(self.elements.present_image(data_url))
 
-        image_section_str = self.__get_image_thumbnail_block_list(str_thumbnail_blocks_list)
-        image_section_str += files
-        return image_section_str
+        return self.elements.image_set(images_list)
 
     def __get_tmp_file_path(self):
         tmp_dir_path = tempfile.gettempdir() 
@@ -94,66 +85,3 @@ class MsTeamsAdaptiveCardFilesImage:
         os.remove(jpg_file_path)
 
         return self.__jpg_convert_bytes_to_base_64_url(jpg_bytes)
-
-
-    def __set_files_key_list(self, file_blocks):
-        for file_block in file_blocks:
-            self.files_keys_list.append(str(uuid.uuid4()))
-
-    def __get_image_thumbnail_block_list(self, block_str_list : list[str]):
-        block = '''{{
-        "type": "ImageSet",
-        "imageSize": "large",
-        "images": [{0}]
-        }},'''
-        s = ''
-        for str_block in block_str_list:
-            s += str_block
-        return block.format(s)
-
-    def __set_action(self, key_to_make_visible: str) -> str:
-        toggle_block = '''
-            "selectAction": {{
-                    "type": "Action.ToggleVisibility",
-                    "title": "cool link",
-                    "targetElements": [{0}]
-            }},
-        '''
-
-        block = '''
-                    "msTeams": {{ "allowExpand": true }},
-        '''
-        action_toggle_str = ''
-        for key in self.files_keys_list:
-            visible = key_to_make_visible == key
-            action_toggle_str += self.__single_action_toggle(key, visible)
-        #return block.format(action_toggle_str)
-        return block.format()
-
-    def __single_action_toggle(self, key : str, visible : bool):
-        block = '''{{
-          "elementId": "{0}",
-          "isVisible": {1}
-        }},'''
-        visible_txt = 'false'
-        if visible:
-            visible_txt = 'true'
-        return block.format(key, visible_txt)
-
-    def __get_image_thumbnail(self, data_url : str, image_key : str):
-        block = '''{{
-            "type": "Image",
-            "url": "{0}",
-            {1}           
-        }},'''
-        action : str = self.__set_action(image_key)
-        return block.format(data_url, action)
-
-    def __get_image(self, data_url: str, key: str):
-        block = '''{{
-            "type": "Image",
-            "url": "{0}",
-            "isVisible": false,
-            "id": "{1}",
-        }},'''
-        return block.format(data_url, key)
