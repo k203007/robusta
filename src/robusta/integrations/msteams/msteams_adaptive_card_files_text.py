@@ -96,7 +96,7 @@ class MsTeamsAdaptiveCardFilesText:
         width = 7 * len(prefix_letters + self.file_name_list[index].replace('***', '')) + 40
         return str(width)
 
-    def __action(self, index, open : bool, title : str):
+    def __action(self, index, open : bool, title : str) -> map:
         visible_elements_map = {False : [], True : []}
         curr_key = self.open_key_list[index]
         for key in self.open_key_list:
