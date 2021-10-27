@@ -32,11 +32,12 @@ class MsTeamsAdaptiveCardElements:
         block["msTeams"] = { "allowExpand": True }    
         return block      
 
-    def text_block(self, text : str, isSubtle : bool = None, wrap: bool = None, weight: str = None, isVisible : bool = True):
+    def text_block(self, text : str, isSubtle : bool = None, wrap: bool = None, weight: str = None, isVisible : bool = True, separator : bool = False):
         block = {}
         block[self.__type] = "TextBlock" 
         block["text"] = text
         block["isVisible"] = isVisible        
+        block["separator"] = separator     
         if isSubtle is not None:
             block["isSubtle"] = isSubtle 
         if wrap is not None:
@@ -63,7 +64,11 @@ class MsTeamsAdaptiveCardElements:
         if width_number is not None:
             block["width"] = str(width_number) + "px"
         if width_strech is not None:
-            block["width"] = "stretch"
+            if width_strech:
+                block["width"] = "stretch"
+            else:
+                block["width"] = "auto"
+
         block["isVisible"] = isVisible
         block["isVisible"] = isVisible
         if key is not None:

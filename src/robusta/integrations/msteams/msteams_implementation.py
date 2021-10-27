@@ -55,7 +55,7 @@ class MsTeamsImplementation:
     def table(self, table_block : TableBlock):
         self.__sub_section_separator()
         msteam_table = MsTeamsAdaptiveCardTable()
-        table = msteam_table.create_table(self.__get_stretch_list_for_table(table_block.headers, False), table_block.headers, table_block.rows)
+        table = msteam_table.create_table(table_block.headers, table_block.rows)
         self.current_section_string += table
 
     def list_of_strings(self, list_block: ListBlock):

@@ -4,68 +4,29 @@ import os
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 from PIL import Image
+
+from src.robusta.integrations.msteams.msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
 from ...core.reporting.blocks import *
 
 class MsTeamsAdaptiveCardTable:
-
-    def create_table(self, columns_weight_strech : list[bool], header_list: list[str], rows: list[list[str]]) :
-        all_columns = ''
-        for index in range(len(header_list)):
-            column = self.__headline_cell(header_list[index])
-
-            first_row = True
-            for row in rows:            
-                column += self.__column_cell(row[index], first_row)
-                first_row = False
-
-            all_columns += self.__single_column(column, False)
-        return self.__column_set(all_columns)
-        
-    def __column_set(self, all_columns : str):
-        block = '''
-        {{
-         "type":"ColumnSet",
-         "columns":[{0}]
-        }},
-        '''
-        return block.format(all_columns)
-
-    def __single_column(self, column_cells: str, width_strech : bool):
-        block = '''
-        {{
-               "type":"Column",
-               "width" : "{0}",
-               "items":[{1}],
-        }},
-        '''
-        return block.format(self.__width(width_strech),column_cells)
-
-    def __headline_cell(self, text: str):
-        block = '''
-        {{
-            "type":"TextBlock",
-            "isSubtle":true,
-            "text":"{0}",
-            "weight":"bolder",
-        }},
-        '''
-        return block.format(text)
     
-    def __column_cell(self, text: str, first_row : bool):
-        separator = ''
-        if (first_row):
-            separator = '"separator": true'
-        block = '''
-        {{
-            "type":"TextBlock",
-            "isSubtle":true,
-            "text":"{0}",
-            {1}
-        }},
-        '''
-        return block.format(text, separator)
+    elements = MsTeamsAdaptiveCardElements()
 
-    def __width(self, width_strech : bool):
-        if (width_strech):
-            return 'stretch'
-        return 'auto'
+    def create_table(self, header_list: list[str], rows: list[list[str]]) -> map:
+        all_columns = [map]
+        for index in range(len(header_list)):
+            column = [map]
+            column.append(self.elements.text_block(text=header_list[index], weight="bolder"))
+
+            column = column + self.create_column(rows=rows[index])
+
+            all_columns.append(self.elements.column(items= column, width_strech=False))
+        return self.elements.column_set(all_columns)
+
+    def create_column(self, rows : list[str]) -> list[map]:
+        first_row = True
+        column = [map]
+        for row in rows:            
+            column.append(self.elements.text_block(text=row, separator=first_row))
+            first_row = False
+        return column
