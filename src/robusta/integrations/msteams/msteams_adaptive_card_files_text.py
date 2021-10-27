@@ -1,6 +1,6 @@
 import uuid
 
-from .msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements, msteams_adaptive_card_elements
+from .msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
 from ...core.reporting.blocks import *
 
 class MsTeamsAdaptiveCardFilesText:
