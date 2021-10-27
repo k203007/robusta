@@ -36,7 +36,6 @@ def main():
     finding.enrichments.append(enrichment)
 
     #divider = DividerBlock()
-    '''
     with open('/workspaces/robusta/1.jpg', 'rb') as f:
         bytes = f.read()
     jpg_file = FileBlock('image.jpg', bytes)
@@ -58,14 +57,14 @@ def main():
     list_block = ListBlock(['item 1','item 2','item 3'])
     
     y1 = DiffDetail(DiffType.ADDED, Container.__class__,'diff in version',[], value='1', other_value='0', report='')
-    y2 = DiffDetail(DiffType.ADDED, Container.__class__,'diff in version',[], value='1', other_value='0', report='')
+    y2 = DiffDetail(DiffType.ADDED, Container.__class__,'diff in version',[], value='4', other_value='5', report='')
     diff = KubernetesDiffBlock([y1, y2], None, None)
     
     table = TableBlock([['row11', 'row12','row13', 'row14'],['row21', 'row22','row231111111111111111111111111', 'row24']], ['header1', 'header2', 'header3', 'header4'])
 
     enrichment = Enrichment([diff, list_block, table, markdown,markdown2, jpg_file, jpg_file2, svg_file1, png_file1,text_file, text_file2, text_file3])
     finding.enrichments.append(enrichment)
-    '''
+    
 
 
     '''

@@ -19,9 +19,8 @@ class MsTeamsAdaptiveCardElements:
         block = {}
         block["selectAction"] = {}
         block["selectAction"]["type"] = "Action.ToggleVisibility"
-        block["title"]["type"] = "Action.ToggleVisibility"
-        block["title"]["title"] = title
-        block["title"]["targetElements"] = target_elements
+        block["selectAction"]["title"] = title
+        block["selectAction"]["targetElements"] = target_elements
 
         return block
 
@@ -81,8 +80,8 @@ class MsTeamsAdaptiveCardElements:
         block = block | action
         return block
 
-    def action_toggle_target_elements(self, visible_keys : list[bool], invisible_keys : list[bool]):
-        actions = [map]
+    def action_toggle_target_elements(self, visible_keys : list[str], invisible_keys : list[str]) -> list[map]:
+        actions = []
 
         actions = self.__set_toggle_action(visible_keys, True)
         actions += self.__set_toggle_action(invisible_keys, False)
@@ -90,10 +89,12 @@ class MsTeamsAdaptiveCardElements:
         return actions
 
     def __set_toggle_action(self, keys : list[str], visible : bool):
-        block_list = [map]
+        block_list = []
         for key in keys:
-            block_list["elementId"] = keys
-            block_list["isVisible"] = visible
+            block = {}
+            block["elementId"] = key
+            block["isVisible"] = visible
+            block_list.append(block)
         return block_list
     
     def card(self, body : list[map]):

@@ -46,10 +46,9 @@ class MsTeamsImplementation:
 
         self.__write_blocks_to_dict(self.card_content, column_set_block)
         self.__write_blocks_to_dict(self.card_content, self.current_section)
-        self.current_section = {}
+        self.current_section = []
 
     def __write_blocks_to_dict(self, dict : list[map], blocks):
-        print(type(blocks))
         if isinstance(blocks, Mapping):
             if blocks:
                 dict.append(blocks)

@@ -13,20 +13,20 @@ class MsTeamsAdaptiveCardTable:
     elements = MsTeamsAdaptiveCardElements()
 
     def create_table(self, header_list: list[str], rows: list[list[str]]) -> map:
-        all_columns = [map]
+        all_columns = []
         for index in range(len(header_list)):
-            column = [map]
+            column = []
             column.append(self.elements.text_block(text=header_list[index], weight="bolder"))
 
-            column = column + self.create_column(rows=rows[index])
+            column = column + self.create_column(rows_list=rows, index=index)
 
             all_columns.append(self.elements.column(items= column, width_strech=False))
         return self.elements.column_set(all_columns)
 
-    def create_column(self, rows : list[str]) -> list[map]:
+    def create_column(self, rows_list : list[list[str]], index : int) -> list[map]:
         first_row = True
-        column = [map]
-        for row in rows:            
-            column.append(self.elements.text_block(text=row, separator=first_row))
+        column = []
+        for row_list in rows_list:            
+            column.append(self.elements.text_block(text=row_list[index], separator=first_row))
             first_row = False
         return column

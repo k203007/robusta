@@ -10,14 +10,14 @@ class MsTeamsAdaptiveCardFilesText:
     close_end_key_list = []
     text_file_presentaiton_key_list = []
 
-    open_text_list = [map]
-    close_start_text_list = [map]
-    close_end_text_list = [map]
-    text_file_presentaiton_list = [map]
+    open_text_list = []
+    close_start_text_list = []
+    close_end_text_list = []
+    text_file_presentaiton_list = []
 
-    action_open_text_list = [map]
-    action_close_start_text_list = [map]
-    action_close_end_text_list = [map]
+    action_open_text_list = []
+    action_close_start_text_list = []
+    action_close_end_text_list = []
 
     file_name_list = []
 
@@ -47,8 +47,8 @@ class MsTeamsAdaptiveCardFilesText:
         self.text_file_presentaiton_key_list.append(str(uuid.uuid4()))
 
     def __manage_blocks_for_single_file(self, index, file_name : str, content : bytes):
-        open_text_action = self.__action(index, True, 'press to open')
-        close_text_action = self.__action(index, False, 'press to close')
+        open_text_action = self.__action(index, open=True, title='press to open')
+        close_text_action = self.__action(index, open =False, title='press to close')
 
         open_text = self.elements.text_block('***open ' + file_name + '***', isSubtle=False)
         close_start = self.elements.text_block('***close ' + file_name + '***', isSubtle=False)
@@ -65,10 +65,10 @@ class MsTeamsAdaptiveCardFilesText:
         self.text_file_presentaiton_list += self.__present_text_file_block(self.text_file_presentaiton_key_list[index], content.decode('utf-8'))
 
     def __manage_all_text_to_send(self):
-        columns_set_list = [map]
+        columns_set_list = []
 
-        top_column_list = [map]
-        botom_column_list = [map]
+        top_column_list = []
+        botom_column_list = []
         for index in range(len(self.open_text_list)):
             width = self.__calc_file_name_width(index)
             
@@ -92,34 +92,35 @@ class MsTeamsAdaptiveCardFilesText:
     def __calc_file_name_width(self, index):
         # taking the max letters so there wont be movement in textblock
         prefix_letters = 'close '
-        width = 7 * len(prefix_letters + self.file_name_list[index].remove('***')) + 40
+        prefix_letters.replace('','')
+        width = 7 * len(prefix_letters + self.file_name_list[index].replace('***', '')) + 40
         return str(width)
 
     def __action(self, index, open : bool, title : str):
-        elements = []
+        visible_elements_map = {False : [], True : []}
         curr_key = self.open_key_list[index]
         for key in self.open_key_list:
             visible = (not open) or (curr_key != key)
-            elements.append(self.elements.action_toggle_target_elements([key], [visible]))
+            visible_elements_map[visible].append(key)
 
         curr_key = self.close_start_key_list[index]
         for key in self.close_start_key_list:
-            visible = False
             visible = open and (curr_key == key)
-            elements.append(self.elements.action_toggle_target_elements([key], [visible]))
+            visible_elements_map[visible].append(key)
 
         curr_key = self.close_end_key_list[index]
         for key in self.close_end_key_list:
-            visible = False
             visible = open and (curr_key == key)
-            elements.append(self.elements.action_toggle_target_elements([key], [visible]))
+            visible_elements_map[visible].append(key)
 
         curr_key = self.text_file_presentaiton_key_list[index]
         for key in self.text_file_presentaiton_key_list:
             visible = open and (curr_key == key)
-            elements.append(self.elements.action_toggle_target_elements([key], [visible]))
+            visible_elements_map[visible].append(key)
+        visible_elements : list[map] = self.elements.action_toggle_target_elements(
+            visible_keys= visible_elements_map[True], invisible_keys =visible_elements_map[True])
 
-        return self.elements.action (title=title, target_elements=elements)
+        return self.elements.action (title=title, target_elements=visible_elements)
 
     def __present_text_file_block(self, key : str, text : str):
         text_blocks = []
