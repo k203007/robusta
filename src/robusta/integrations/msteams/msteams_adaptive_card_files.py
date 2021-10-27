@@ -6,9 +6,9 @@ class MsTeamsAdaptiveCardFiles:
 
     files_keys_list = []
 
-    def upload_files(self, file_blocks: list[FileBlock]):
-        image_section_str = MsTeamsAdaptiveCardFilesImage().create_files_for_presentation(file_blocks)
-        text_files_section_str = MsTeamsAdaptiveCardFilesText().create_files_for_presentation(file_blocks)
+    def upload_files(self, file_blocks: list[FileBlock]) -> list[map]:
+        image_section_map : map = MsTeamsAdaptiveCardFilesImage().create_files_for_presentation(file_blocks)
+        text_files_section_list = MsTeamsAdaptiveCardFilesText().create_files_for_presentation(file_blocks)
 
-        return image_section_str + text_files_section_str
+        return [image_section_map] + text_files_section_list
 

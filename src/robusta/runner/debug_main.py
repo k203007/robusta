@@ -29,10 +29,14 @@ def main():
     finding.title = 'test'
     finding.description = 'this is a short desc\n\nanother line'
     
-    '''
     markdown = MarkdownBlock('markdown text\n\n11111\n\n2222')
     markdown2 = MarkdownBlock('3333\n444444')    
+
+    enrichment = Enrichment([ markdown,markdown2])
+    finding.enrichments.append(enrichment)
+
     #divider = DividerBlock()
+    '''
     with open('/workspaces/robusta/1.jpg', 'rb') as f:
         bytes = f.read()
     jpg_file = FileBlock('image.jpg', bytes)

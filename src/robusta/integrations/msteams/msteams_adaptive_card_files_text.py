@@ -34,7 +34,7 @@ class MsTeamsAdaptiveCardFilesText:
             file_content_list.append(file_block.contents)
 
         if len(self.open_key_list) == 0:
-            return ''
+            return []
 
         for index in range(len(self.open_key_list)):
             self.__manage_blocks_for_single_file(index, self.file_name_list[index], file_content_list[index])
