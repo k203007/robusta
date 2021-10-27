@@ -3,7 +3,7 @@ import logging
 import requests
 from collections.abc import Mapping
 
-from src.robusta.integrations.msteams.msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
+from .msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
 
 from .msteams_adaptive_card_files import MsTeamsAdaptiveCardFiles
 from .msteams_adaptive_card_table import MsTeamsAdaptiveCardTable

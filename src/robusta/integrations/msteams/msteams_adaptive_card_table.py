@@ -5,7 +5,7 @@ from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 from PIL import Image
 
-from src.robusta.integrations.msteams.msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
+from .msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
 from ...core.reporting.blocks import *
 
 class MsTeamsAdaptiveCardTable:
