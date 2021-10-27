@@ -9,6 +9,12 @@ class MsTeamsAdaptiveCardElements:
         block["images"]=  images_list
         return block
 
+    def column_set(self, columns_list : list[map]) -> map:
+        block = {}
+        block[self.__type] =  "ColumnSet"
+        block["columns"]=  columns_list
+        return block
+
     def action(self, title : str, target_elements : list[map]):
         block = {}
         block["selectAction"] = {}
@@ -26,10 +32,11 @@ class MsTeamsAdaptiveCardElements:
         block["msTeams"] = { "allowExpand": True }    
         return block      
 
-    def text_block(self, text : str, isSubtle : bool = None, wrap: bool = None, weight: str = None):
+    def text_block(self, text : str, isSubtle : bool = None, wrap: bool = None, weight: str = None, isVisible : bool = True):
         block = {}
         block[self.__type] = "TextBlock" 
-        block["text"] = text 
+        block["text"] = text
+        block["isVisible"] = isVisible        
         if isSubtle is not None:
             block["isSubtle"] = isSubtle 
         if wrap is not None:
@@ -49,7 +56,8 @@ class MsTeamsAdaptiveCardElements:
         block["items"] = items
         return block
 
-    def column(self, width_number: int = None, width_strech : bool = None, isVisible : bool = True, key : str = None, items : list[map] = []):
+    def column(self, width_number: int = None, width_strech : bool = None, isVisible : bool = True, 
+                key : str = None, items : list[map] = [], action : map = {}):
         block = {}
         block[self.__type] = "Column"
         if width_number is not None:
@@ -61,6 +69,8 @@ class MsTeamsAdaptiveCardElements:
         if key is not None:
             block["id"] = key
         block["items"] = items
+        block = block | action
+        return block
 
     def action_toggle_target_elements(self, visible_keys : list[bool], invisible_keys : list[bool]):
         pass

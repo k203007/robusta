@@ -10,20 +10,20 @@ class MsTeamsAdaptiveCardFilesText:
     close_end_key_list = []
     text_file_presentaiton_key_list = []
 
-    open_text_list = []
-    close_start_text_list = []
-    close_end_text_list = []
-    text_file_presentaiton_text = ''
+    open_text_list = [map]
+    close_start_text_list = [map]
+    close_end_text_list = [map]
+    text_file_presentaiton_list = [map]
 
-    action_open_text_list = []
-    action_close_start_text_list = []
-    action_close_end_text_list = []
+    action_open_text_list = [map]
+    action_close_start_text_list = [map]
+    action_close_end_text_list = [map]
 
-    file_name_list = []        
+    file_name_list = []
 
     elements = MsTeamsAdaptiveCardElements()
 
-    def create_files_for_presentation(self, file_blocks: list[FileBlock]):
+    def create_files_for_presentation(self, file_blocks: list[FileBlock]) -> list[map]:
         file_content_list = []
 
         for file_block in file_blocks:
@@ -62,50 +62,37 @@ class MsTeamsAdaptiveCardFilesText:
         self.action_close_start_text_list.append(close_text_action)
         self.action_close_end_text_list.append(close_text_action)
 
-        self.text_file_presentaiton_text += self.__present_text_file_block(self.text_file_presentaiton_key_list[index], content.decode('utf-8'))
+        self.text_file_presentaiton_list += self.__present_text_file_block(self.text_file_presentaiton_key_list[index], content.decode('utf-8'))
 
     def __manage_all_text_to_send(self):
-        block = '''
-        {{
-        "type": "ColumnSet",
-        "columns": [{0}]
-        }},
-        '''
+        columns_set_list = [map]
 
-        single_column = '''
-        {{
-          "type": "Column",
-          "width": "{3}px",
-          "items": [{0}],
-          "isVisible": {1},
-          "id": "{2}",
-          {4}
-        }},
-        '''
-
-        top_files_line = ''
-        items_text = ''
+        top_column_list = [map]
+        botom_column_list = [map]
         for index in range(len(self.open_text_list)):
             width = self.__calc_file_name_width(index)
-            xxxxxxxxxx
-            items_text += single_column.format(self.open_text_list[index], 'true', self.open_key_list[index],  width,  self.action_open_text_list[index])
-            items_text += single_column.format(self.close_start_text_list[index],  'false', self.close_start_key_list[index], width, self.action_close_start_text_list[index])            
-        top_files_line = block.format(items_text)
+            
+            
+            top_column_list.append( self.elements.column(width_number=width, isVisible=True, key=self.open_key_list[index], 
+                            items=self.open_text_list[index], action= self.action_open_text_list[index]))
 
-        bottom_files_line = ''
-        items_text = ''
-        for index in range(len(self.close_end_text_list)):
-            width = self.__calc_file_name_width(index)
-            items_text += single_column.format(self.close_end_text_list[index], 'false', self.close_end_key_list[index], width, self.action_close_end_text_list[index])
-        bottom_files_line = block.format(items_text)
+            top_column_list.append(  self.elements.column(width_number=width, isVisible=False, key=self.close_start_key_list[index], 
+                        items=self.close_start_text_list[index], action=self.action_close_start_text_list[index]))
 
-        return top_files_line + self.text_file_presentaiton_text +  bottom_files_line
+            botom_column_list.append(  self.elements.column(width_number=width, isVisible=False, key=self.close_end_key_list[index], 
+                        items=self.close_end_text_list[index], action=self.action_close_end_text_list[index]))
+
+        columns_set_list.append(top_column_list)
+        columns_set_list.append(self.text_file_presentaiton_list)
+        columns_set_list.append(botom_column_list)
+
+        return columns_set_list
     
     # need to calc the approximate size of the file name + the prefix, otherwise it will spread on the entire line
     def __calc_file_name_width(self, index):
         # taking the max letters so there wont be movement in textblock
         prefix_letters = 'close '
-        width = 7 * len(prefix_letters + self.file_name_list[index]) + 40
+        width = 7 * len(prefix_letters + self.file_name_list[index].remove('***')) + 40
         return str(width)
 
     def __action(self, index, open : bool, title : str):
@@ -137,12 +124,11 @@ class MsTeamsAdaptiveCardFilesText:
     def __present_text_file_block(self, key : str, text : str):
         text_blocks = []
         for line in text.split('\n'):
-            text_blocks.append(self.elements.text_block(text, wrap=True, weight='bolder'))
-        return self.elements(key=key, items=text_blocks)
-
+            text_blocks.append(self.elements.text_block(line, wrap=True, weight='bolder', isVisible=False))
+        return self.elements.container(key=key, items=text_blocks)
 
     def __its_txt_file(self, file_name: str):
-        txt_prefix_list = ['.txt', '.json', 'yaml']
+        txt_prefix_list = ['.txt', '.json', '.yaml']
         if file_name[-4:] in txt_prefix_list:
             return True
         return False
