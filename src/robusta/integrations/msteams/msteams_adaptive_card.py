@@ -19,14 +19,6 @@ class MsTeamsAdaptiveCard:
 
     curr_card = ''
 
-    def get_text_block(self, text : str, font_size : AdaptiveCardFontSize):
-        block = ''' {{
-                "type": "TextBlock",
-                "text": "{0}",
-                "size": "{1}"
-                }}, '''
-        return block.format(text, font_size.value)
-
     def get_section_separator(self):
         block = '''
         {{"type":"ColumnSet","columns":[
