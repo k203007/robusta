@@ -6,20 +6,15 @@ from src.robusta.integrations.msteams.msteams_adaptive_card_elements import MsTe
 
 from .msteams_adaptive_card_files import MsTeamsAdaptiveCardFiles
 from .msteams_adaptive_card_table import MsTeamsAdaptiveCardTable
-from .msteams_adaptive_card import AdaptiveCardFontSize,MsTeamsAdaptiveCard
 from ...core.model.events import *
 from ...core.reporting.blocks import *
 from ...core.reporting.utils import add_pngs_for_all_svgs
-from ...core.reporting.callbacks import PlaybookCallbackRequest
-from ...core.reporting.consts import SlackAnnotations
 from ...core.model.env_vars import TARGET_ID
 
 ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 MsTeamsBlock = Dict[str, Any]
 
 class MsTeamsImplementation:
-    current_body_string = ''
-    current_section_string = ''
     msteams_hookurl = ''
 
     card_content = [map]
@@ -40,24 +35,33 @@ class MsTeamsImplementation:
     def __write_section_to_card(self):
         if len(self.current_section) == 0:
             return
+
+        space_block = self.elements.text_block(text=' ', font_size='small')
+        separator_block = self.elements.text_block(text=' ',separator=True)
+        column_block = self.elements.column(items=[space_block,separator_block], width_strech= True)
+        column_set_block = self.elements.column_set(column_block)
+
+        self.card_content.append(column_set_block)
         self.card_content.append(self.current_section)
         self.current_section = {}
 
     def __sub_section_separator(self):
         if len(self.current_section) == 0:
             return
-        self.current_section_string += self.myTeamsMessage.get_sub_section_separator()
+        space_block = self.elements.text_block(text=' ', font_size='small')
+        separator_block = self.elements.text_block(text='_' * 30, font_size='small', horizontalAlignment='center')
+        self.current_section.append(space_block,separator_block,space_block,space_block)
 
     def upload_files(self, file_blocks: list[FileBlock]):
         self.__sub_section_separator()
         msteams_files = MsTeamsAdaptiveCardFiles()
-        self.current_section_string += msteams_files.upload_files(file_blocks)
+        self.current_section.append(msteams_files.upload_files(file_blocks))
 
     def table(self, table_block : TableBlock):
         self.__sub_section_separator()
         msteam_table = MsTeamsAdaptiveCardTable()
         table = msteam_table.create_table(table_block.headers, table_block.rows)
-        self.current_section_string += table
+        self.current_section.append(table)
 
     def list_of_strings(self, list_block: ListBlock):
         self.__sub_section_separator()
@@ -98,10 +102,10 @@ class MsTeamsImplementation:
 
     def send(self):
         try:
-            self.elements.card(xxxxxx)
             self.__write_section_to_card()
-
-            response = requests.post(self.msteams_hookurl, data = self.myTeamsMessage.get_msg_to_send(self.current_body_string))
+            json_map = self.elements.card(self.card_content)
+            print(json_map)
+            response = requests.post(self.msteams_hookurl, json= json_map)
             print(response)
         except Exception as e:
             logging.error(f"error sending message to msteams\ne={e}\n")        
