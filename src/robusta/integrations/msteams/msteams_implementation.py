@@ -2,6 +2,8 @@ import json
 import logging
 import requests
 
+from src.robusta.integrations.msteams.msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
+
 from .msteams_adaptive_card_files import MsTeamsAdaptiveCardFiles
 from .msteams_adaptive_card_table import MsTeamsAdaptiveCardTable
 from .msteams_adaptive_card import AdaptiveCardFontSize,MsTeamsAdaptiveCard
@@ -20,30 +22,29 @@ class MsTeamsImplementation:
     current_section_string = ''
     msteams_hookurl = ''
 
+    card_content = [map]
+    current_section = []
+
+    elements = MsTeamsAdaptiveCardElements()
+
     def __init__(self, msteams_hookurl: str, title: str, description: str):
-        try:
-            self.msteams_hookurl = msteams_hookurl
-            self.myTeamsMessage = MsTeamsAdaptiveCard()
-            self.myTeamsMessage.set_text_block(title, AdaptiveCardFontSize.EXTRA_LARGE)
-            if description is not None:
-                self.myTeamsMessage.set_text_block(description, AdaptiveCardFontSize.MEDIUM)
-        except Exception as e:
-            logging.error(f"Error creating MsTeamsAdaptiveCard: {e}")
-            raise e
+        self.msteams_hookurl = msteams_hookurl
+        self.card_content.append(self.elements.text_block(text=title, font_size='extraLarge'))
+        if description is not None:
+            self.card_content.append(self.elements.text_block(text=description))
 
     def new_card_section(self):
         # write previous section
         self.__write_section_to_card()
 
     def __write_section_to_card(self):
-        if self.current_section_string == '':
+        if len(self.current_section) == 0:
             return
-        self.current_body_string = self.myTeamsMessage.get_section_separator() + self.current_body_string
-        self.current_body_string += self.current_section_string
-        self.current_section_string = ''
+        self.card_content.append(self.current_section)
+        self.current_section = {}
 
     def __sub_section_separator(self):
-        if self.current_section_string == '':
+        if len(self.current_section) == 0:
             return
         self.current_section_string += self.myTeamsMessage.get_sub_section_separator()
 
@@ -60,11 +61,9 @@ class MsTeamsImplementation:
 
     def list_of_strings(self, list_block: ListBlock):
         self.__sub_section_separator()
-        markdown_str_list = ''
-        for text in list_block.items:
-            markdown_str_list += '\n- ' + text + '\n'
-        list_str = self.myTeamsMessage.get_text_block(markdown_str_list, AdaptiveCardFontSize.MEDIUM)
-        self.current_section_string += list_str
+        for line in list_block.items:
+            line_with_point = '\n- ' + line + '\n'
+            self.current_section.append(self.elements.text_block(line_with_point))
 
     def diff(self, block: KubernetesDiffBlock):
         rows = []
@@ -84,14 +83,14 @@ class MsTeamsImplementation:
         if not block.text:
             return
         text = self.__apply_length_limit(block.text) + self.__new_line_replacer('\n\n')
-        self.current_section_string += self.myTeamsMessage.get_text_block(text, AdaptiveCardFontSize.MEDIUM)
+        self.current_section.append(self.elements.text_block(text))
 
     def divider_block(self, block: BaseBlock):
-        self.current_section_string += self.__new_line_replacer('\n\n')
+        self.current_section.append(self.elements.text_block(self.__new_line_replacer('\n\n')))
 
     def header_block(self, block: BaseBlock):
         current_header_string = self.__apply_length_limit(block.text, 150) + self.__new_line_replacer('\n\n')
-        self.current_section_string += self.myTeamsMessage.get_text_block(current_header_string, AdaptiveCardFontSize.EXTRA_LARGE)
+        self.current_section.append(self.elements.text_block(current_header_string, font_size='large'))
 
     def get_action_block_for_choices(self, choices: Dict[str, Callable] = None, context=""):
         if choices is None:
@@ -99,7 +98,9 @@ class MsTeamsImplementation:
 
     def send(self):
         try:
+            self.elements.card(xxxxxx)
             self.__write_section_to_card()
+
             response = requests.post(self.msteams_hookurl, data = self.myTeamsMessage.get_msg_to_send(self.current_body_string))
             print(response)
         except Exception as e:

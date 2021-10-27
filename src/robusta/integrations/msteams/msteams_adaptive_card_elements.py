@@ -32,10 +32,11 @@ class MsTeamsAdaptiveCardElements:
         block["msTeams"] = { "allowExpand": True }    
         return block      
 
-    def text_block(self, text : str, isSubtle : bool = None, wrap: bool = None, weight: str = None, isVisible : bool = True, separator : bool = False):
+    def text_block(self, text : str, isSubtle : bool = None, wrap: bool = None, weight: str = None, isVisible : bool = True, separator : bool = False, font_size : str = 'medium'):
         block = {}
         block[self.__type] = "TextBlock" 
         block["text"] = text
+        block["size"] = font_size
         block["isVisible"] = isVisible        
         block["separator"] = separator     
         if isSubtle is not None:
@@ -78,6 +79,54 @@ class MsTeamsAdaptiveCardElements:
         return block
 
     def action_toggle_target_elements(self, visible_keys : list[bool], invisible_keys : list[bool]):
-        pass
+        actions = [map]
 
+        actions = self.__set_toggle_action(visible_keys, True)
+        actions += self.__set_toggle_action(invisible_keys, False)
         
+        return actions
+
+    def __set_toggle_action(self, keys : list[str], visible : bool):
+        block_list = [map]
+        for key in keys:
+            block_list["elementId"] = keys
+            block_list["isVisible"] = visible
+        return block_list
+    
+    def card(self, body : list[map]):
+        __BODY =  """{{
+                        "type":"message",
+                        "attachments":[
+                        {{
+                            "contentType":"application/vnd.microsoft.card.adaptive",
+                            "contentUrl":null,
+                            "content":{{
+                                "$schema":"http://adaptivecards.io/schemas/adaptive-card.json",
+                                "type":"AdaptiveCard",
+                                "version":"1.2",
+                                "msTeams": {{ "width": "full" }},
+                                "body":[
+                                    {0}  
+                                ]
+                            }}
+                        }}
+                        ]
+                    }}"""
+
+        content = {}
+        content["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json"
+        content["type"] = "AdaptiveCard"
+        content["version"] = "1.2"
+        content["msTeams"] = {"width": "full"}
+        content["body"] = body
+
+        atachment_map = {}
+        atachment_map["contentType"] = "application/vnd.microsoft.card.adaptive"
+        atachment_map["contentUrl"] = None
+        atachment_map["content"] = content
+        
+        block = {}
+        block["type"] = "message"
+        block["attachments"] = [atachment_map]
+
+        return block
