@@ -62,7 +62,7 @@ class MsTeamsAdaptiveCardFilesText:
         self.action_close_start_text_list.append(close_text_action)
         self.action_close_end_text_list.append(close_text_action)
 
-        self.text_file_presentaiton_list += self.__present_text_file_block(self.text_file_presentaiton_key_list[index], content.decode('utf-8'))
+        self.text_file_presentaiton_list.append(self.__present_text_file_block(self.text_file_presentaiton_key_list[index], content.decode('utf-8')))
 
     def __manage_all_text_to_send(self):
         columns_set_list = []
@@ -74,19 +74,22 @@ class MsTeamsAdaptiveCardFilesText:
             
             
             top_column_list.append( self.elements.column(width_number=width, isVisible=True, key=self.open_key_list[index], 
-                            items=self.open_text_list[index], action= self.action_open_text_list[index]))
+                            items=[self.open_text_list[index]], action= self.action_open_text_list[index]))
 
             top_column_list.append(  self.elements.column(width_number=width, isVisible=False, key=self.close_start_key_list[index], 
-                        items=self.close_start_text_list[index], action=self.action_close_start_text_list[index]))
+                        items=[self.close_start_text_list[index]], action=self.action_close_start_text_list[index]))
 
             botom_column_list.append(  self.elements.column(width_number=width, isVisible=False, key=self.close_end_key_list[index], 
-                        items=self.close_end_text_list[index], action=self.action_close_end_text_list[index]))
+                        items=[self.close_end_text_list[index]], action=self.action_close_end_text_list[index]))
 
-        columns_set_list.append(top_column_list)
-        columns_set_list.append(self.text_file_presentaiton_list)
-        columns_set_list.append(botom_column_list)
+        top_column_set = self.elements.column_set(top_column_list)        
+        bottom_column_set = self.elements.column_set(botom_column_list)
 
-        return columns_set_list
+        list_to_return = [top_column_set]
+        list_to_return += self.text_file_presentaiton_list
+        list_to_return.append(bottom_column_set)
+
+        return list_to_return
     
     # need to calc the approximate size of the file name + the prefix, otherwise it will spread on the entire line
     def __calc_file_name_width(self, index):
@@ -118,14 +121,14 @@ class MsTeamsAdaptiveCardFilesText:
             visible = open and (curr_key == key)
             visible_elements_map[visible].append(key)
         visible_elements : list[map] = self.elements.action_toggle_target_elements(
-            visible_keys= visible_elements_map[True], invisible_keys =visible_elements_map[True])
+            visible_keys= visible_elements_map[True], invisible_keys =visible_elements_map[False])
 
         return self.elements.action (title=title, target_elements=visible_elements)
 
     def __present_text_file_block(self, key : str, text : str):
         text_blocks = []
         for line in text.split('\n'):
-            text_blocks.append(self.elements.text_block(line, wrap=True, weight='bolder', isVisible=False))
+            text_blocks.append(self.elements.text_block(line, wrap=True, weight='bolder', isVisible=True))
         return self.elements.container(key=key, items=text_blocks)
 
     def __its_txt_file(self, file_name: str):

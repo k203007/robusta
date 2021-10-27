@@ -33,7 +33,7 @@ def main():
     markdown2 = MarkdownBlock('3333\n444444')    
 
     enrichment = Enrichment([ markdown,markdown2])
-    finding.enrichments.append(enrichment)
+    #finding.enrichments.append(enrichment)
 
     #divider = DividerBlock()
     with open('/workspaces/robusta/1.jpg', 'rb') as f:

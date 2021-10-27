@@ -10,5 +10,5 @@ class MsTeamsAdaptiveCardFiles:
         image_section_map : map = MsTeamsAdaptiveCardFilesImage().create_files_for_presentation(file_blocks)
         text_files_section_list = MsTeamsAdaptiveCardFilesText().create_files_for_presentation(file_blocks)
 
-        return [image_section_map] + text_files_section_list
+        return text_files_section_list  + [image_section_map]
 

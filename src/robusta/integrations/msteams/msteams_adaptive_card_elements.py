@@ -56,7 +56,7 @@ class MsTeamsAdaptiveCardElements:
         block["isVisible"] = False
         if key is not None:
             block["id"] = key
-        block["bleed"] = True
+        block["bleed"] = False
         block["items"] = items
         return block
 
