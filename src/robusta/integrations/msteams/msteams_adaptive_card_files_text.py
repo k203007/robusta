@@ -142,7 +142,7 @@ class MsTeamsAdaptiveCardFilesText:
 
         # will be completed later
         text_block = self.elements.text_block('', wrap=True, weight='bolder', isVisible=True)
-        self.text_map_and_single_text_lines_list.append(text_block, text_lines_list)
+        self.text_map_and_single_text_lines_list.append([text_block, text_lines_list])
         return self.elements.container(key=key, items=[text_block])
 
     def __its_txt_file(self, file_name: str):

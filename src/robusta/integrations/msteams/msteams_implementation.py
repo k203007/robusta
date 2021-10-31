@@ -74,12 +74,10 @@ class MsTeamsImplementation:
         self.__sub_section_separator()
         msteams_files = MsTeamsAdaptiveCardFiles()
         block_list : list = msteams_files.upload_files(file_blocks)
-        self.text_map_and_single_text_lines_list__for_text_files.append(
+        self.text_map_and_single_text_lines_list__for_text_files += \
             msteams_files.get_text_map_and_single_text_lines_list__for_text_files()
-        )
-        self.url_image_map__for_image_files.append(
-            msteams_files.get_url_map_list()
-        )
+        self.url_image_map__for_image_files += msteams_files.get_url_map_list()
+        
         self.__write_blocks_to_dict(self.current_section, block_list)
 
     def table(self, table_block : TableBlock):
@@ -123,16 +121,16 @@ class MsTeamsImplementation:
     def _put_text_files_data_up_to_max_limit(self, card_map : map):
         curr_images_len = 0
         for image_map in self.url_image_map__for_image_files:
-            curr_images_len += len(image_map['url'])
+            curr_images_len += self.elements.get_image_url_size(image_map)
         
-        max_len_left = self.MAX_SIZE_IN_BYTES - (json.dumps(card_map) - curr_images_len)
+        max_len_left = self.MAX_SIZE_IN_BYTES - (len(json.dumps(card_map)) - curr_images_len)
 
         curr_line = 0
         while True:
             line_added = False
             curr_line += 1
             for text_map, lines in self.text_map_and_single_text_lines_list__for_text_files:
-                if len(lines) > curr_line:
+                if len(lines) < curr_line:
                     continue
                 line = lines[len(lines) - curr_line]
                 max_len_left -= len(line)

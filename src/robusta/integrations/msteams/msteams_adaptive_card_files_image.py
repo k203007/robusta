@@ -29,7 +29,7 @@ class MsTeamsAdaptiveCardFilesImage:
         return self.elements.image_set(images_list)
 
     def get_url_map_list(self):
-        return self.get_url_map_list()
+        return self.url_map_list
 
     def __get_tmp_file_path(self):
         tmp_dir_path = tempfile.gettempdir() 
