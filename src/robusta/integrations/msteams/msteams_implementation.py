@@ -16,10 +16,16 @@ ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 MsTeamsBlock = Dict[str, Any]
 
 class MsTeamsImplementation:
+    # actual size according to the DOC is ~28K. according to what was tested max was 29,465
+    # so we take 28K as MAX
+    MAX_SIZE_IN_BYTES = (1024 * 28)    
     msteams_hookurl = ''
 
     card_content = []
     current_section = []
+
+    text_map_and_single_text_lines_list__for_text_files = []
+    url_image_map__for_image_files = []
 
     elements = MsTeamsAdaptiveCardElements()
 
@@ -62,13 +68,18 @@ class MsTeamsImplementation:
             return
         space_block = self.elements.text_block(text=' ', font_size='small')
         separator_block = self.elements.text_block(text='_' * 30, font_size='small', horizontalAlignment='center')
-
         self.__write_blocks_to_dict(self.current_section, [space_block,separator_block,space_block,space_block])
 
     def upload_files(self, file_blocks: list[FileBlock]):
         self.__sub_section_separator()
         msteams_files = MsTeamsAdaptiveCardFiles()
         block_list : list = msteams_files.upload_files(file_blocks)
+        self.text_map_and_single_text_lines_list__for_text_files.append(
+            msteams_files.get_text_map_and_single_text_lines_list__for_text_files()
+        )
+        self.url_image_map__for_image_files.append(
+            msteams_files.get_url_map_list()
+        )
         self.__write_blocks_to_dict(self.current_section, block_list)
 
     def table(self, table_block : TableBlock):
@@ -108,12 +119,38 @@ class MsTeamsImplementation:
         if choices is None:
           return
 
+    # dont include the base 64 images in the total size calculation
+    def _put_text_files_data_up_to_max_limit(self, card_map : map):
+        curr_images_len = 0
+        for image_map in self.url_image_map__for_image_files:
+            curr_images_len += len(image_map['url'])
+        
+        max_len_left = self.MAX_SIZE_IN_BYTES - (json.dumps(card_map) - curr_images_len)
+
+        curr_line = 0
+        while True:
+            line_added = False
+            curr_line += 1
+            for text_map, lines in self.text_map_and_single_text_lines_list__for_text_files:
+                if len(lines) > curr_line:
+                    continue
+                line = lines[len(lines) - curr_line]
+                max_len_left -= len(line)
+                if max_len_left < 0:
+                    return
+                new_text_value = line + self.elements.get_text_from_block(text_map)
+                self.elements.set_text_from_block(text_map, new_text_value)
+                line_added = True
+            if not line_added:
+                return
+
     def send(self):
         try:
             self.__write_section_to_card()
-            json_map = self.elements.card(self.card_content)
-            print(json.dumps(json_map, indent=4))
-            response = requests.post(self.msteams_hookurl, json= json_map)
+            complete_card_map = self.elements.card(self.card_content)
+            self._put_text_files_data_up_to_max_limit(complete_card_map)
+            print(json.dumps(complete_card_map, indent=4))
+            response = requests.post(self.msteams_hookurl, json= complete_card_map)
             print(response)
         except Exception as e:
             logging.error(f"error sending message to msteams\ne={e}\n")        

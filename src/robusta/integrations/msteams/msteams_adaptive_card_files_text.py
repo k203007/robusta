@@ -21,6 +21,9 @@ class MsTeamsAdaptiveCardFilesText:
 
     file_name_list = []
 
+
+    text_map_and_single_text_lines_list = []
+
     elements = MsTeamsAdaptiveCardElements()
 
     def create_files_for_presentation(self, file_blocks: list[FileBlock]) -> list[map]:
@@ -39,6 +42,9 @@ class MsTeamsAdaptiveCardFilesText:
         for index in range(len(self.open_key_list)):
             self.__manage_blocks_for_single_file(index, self.file_name_list[index], file_content_list[index])
         return self.__manage_all_text_to_send()
+
+    def get_text_map_and_single_text_lines_list(self):
+        return self.text_map_and_single_text_lines_list
 
     def __create_new_keys(self):
         self.open_key_list.append(str(uuid.uuid4()))
@@ -126,21 +132,18 @@ class MsTeamsAdaptiveCardFilesText:
         return self.elements.action (title=title, target_elements=visible_elements)
 
     # there is a limit to the number of letters you can write - dont know what it is !!!
+    # /t doesn't work so we need to simulate spaces (which are trimmed so we use '. . . ')
     def __present_text_file_block(self, key : str, text : str):
-        text_blocks = []
+        text_lines_list = []
         new_text = text.replace('\t', '. . . ')
 
-        lines_str = ''
         for line in new_text.split('\n'):
-            lines_str += line + '\n\n'
-            if len(lines_str) > 2000:
-                text_blocks.append(self.elements.text_block(lines_str, wrap=True, weight='bolder', isVisible=True))
-                lines_str = ''
+            text_lines_list.append(line + '\n\n')
 
-        if len(lines_str) > 2000:
-            text_blocks.append(self.elements.text_block(lines_str, wrap=True, weight='bolder', isVisible=True))
-            lines_str = ''
-        return self.elements.container(key=key, items=text_blocks)
+        # will be completed later
+        text_block = self.elements.text_block('', wrap=True, weight='bolder', isVisible=True)
+        self.text_map_and_single_text_lines_list.append(text_block, text_lines_list)
+        return self.elements.container(key=key, items=[text_block])
 
     def __its_txt_file(self, file_name: str):
         txt_prefix_list = ['.txt', '.json', '.yaml']

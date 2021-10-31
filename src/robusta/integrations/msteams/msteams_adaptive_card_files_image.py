@@ -13,16 +13,23 @@ from ...core.reporting.blocks import *
 class MsTeamsAdaptiveCardFilesImage:
 
     elements = MsTeamsAdaptiveCardElements()
+    url_map_list = []
+
     def create_files_for_presentation(self, file_blocks: list[FileBlock]) -> map:
         images_list = []        
         for file_block in file_blocks:
             if not self.__file_is_image(file_block.filename):
                 continue
             data_url = self.__convert_bytes_to_base_64_url(file_block.filename, file_block.contents)
+            image_map = self.elements.present_image(data_url)
+            self.url_map_list.append(image_map)
             images_list.append(self.elements.present_image(data_url))
         if len(images_list) == 0:
             return {}
         return self.elements.image_set(images_list)
+
+    def get_url_map_list(self):
+        return self.get_url_map_list()
 
     def __get_tmp_file_path(self):
         tmp_dir_path = tempfile.gettempdir() 

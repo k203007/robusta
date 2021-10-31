@@ -24,6 +24,15 @@ class MsTeamsAdaptiveCardElements:
 
         return block
 
+    def get_text_from_block(self, block : map) -> str:
+        return block["text"]
+
+    def set_text_from_block(self, block : map, text : str):
+        block["text"] = text
+
+    def get_image_url_size(self, image_map : map) -> int:
+        return len(image_map["url"])
+
     def present_image(self, url : str) -> map:
         block = {}
         block[self.__type] = "Image"
