@@ -125,10 +125,21 @@ class MsTeamsAdaptiveCardFilesText:
 
         return self.elements.action (title=title, target_elements=visible_elements)
 
+    # there is a limit to the number of letters you can write - dont know what it is !!!
     def __present_text_file_block(self, key : str, text : str):
         text_blocks = []
-        for line in text.split('\n'):
-            text_blocks.append(self.elements.text_block(line, wrap=True, weight='bolder', isVisible=True))
+        new_text = text.replace('\t', '. . . ')
+
+        lines_str = ''
+        for line in new_text.split('\n'):
+            lines_str += line + '\n\n'
+            if len(lines_str) > 2000:
+                text_blocks.append(self.elements.text_block(lines_str, wrap=True, weight='bolder', isVisible=True))
+                lines_str = ''
+
+        if len(lines_str) > 2000:
+            text_blocks.append(self.elements.text_block(lines_str, wrap=True, weight='bolder', isVisible=True))
+            lines_str = ''
         return self.elements.container(key=key, items=text_blocks)
 
     def __its_txt_file(self, file_name: str):
