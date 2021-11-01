@@ -19,7 +19,7 @@ MsTeamsBlock = Dict[str, Any]
 class MsTeamsImplementation:
     # actual size according to the DOC is ~28K. according to what was tested max was 29,465
     # so we take 28K as MAX
-    MAX_SIZE_IN_BYTES = (1024 * 26)    
+    MAX_SIZE_IN_BYTES = (1024 * 24)    
     msteams_hookurl = ''
 
     card_content = []
