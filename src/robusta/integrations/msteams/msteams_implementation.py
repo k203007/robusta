@@ -1,3 +1,4 @@
+import sys,os
 import json
 import logging
 import requests
@@ -18,7 +19,7 @@ MsTeamsBlock = Dict[str, Any]
 class MsTeamsImplementation:
     # actual size according to the DOC is ~28K. according to what was tested max was 29,465
     # so we take 28K as MAX
-    MAX_SIZE_IN_BYTES = (1024 * 28)    
+    MAX_SIZE_IN_BYTES = (1024 * 26)    
     msteams_hookurl = ''
 
     card_content = []
@@ -122,13 +123,12 @@ class MsTeamsImplementation:
         curr_images_len = 0
         for image_map in self.url_image_map__for_image_files:
             curr_images_len += self.elements.get_image_url_size(image_map)
-        
-        max_len_left = self.MAX_SIZE_IN_BYTES - (len(json.dumps(card_map)) - curr_images_len)
+        max_len_left = self.MAX_SIZE_IN_BYTES - (self.__get_current_card_len(card_map) - curr_images_len)
 
         curr_line = 0
         while True:
             line_added = False
-            curr_line += 1
+            curr_line += 1            
             for text_map, lines in self.text_map_and_single_text_lines_list__for_text_files:
                 if len(lines) < curr_line:
                     continue
@@ -147,11 +147,20 @@ class MsTeamsImplementation:
             self.__write_section_to_card()
             complete_card_map = self.elements.card(self.card_content)
             self._put_text_files_data_up_to_max_limit(complete_card_map)
-            print(json.dumps(complete_card_map, indent=4))
+
+            #print(json.dumps(complete_card_map, ensure_ascii=False))      
+            print(self.__get_current_card_len(complete_card_map))
             response = requests.post(self.msteams_hookurl, json= complete_card_map)
-            print(response)
+            if 'error' in response.content.decode():
+                print('failed !!!!!')
+                raise Exception('error in sending') 
+            print('success')            
+
         except Exception as e:
             logging.error(f"error sending message to msteams\ne={e}\n")        
+
+    def __get_current_card_len(self, complete_card_map : map):
+        return len(json.dumps(complete_card_map, ensure_ascii=True, indent=2))
 
     def __apply_length_limit(self, msg: str, max_length: int = 3000):
         if len(msg) <= max_length:
