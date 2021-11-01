@@ -22,7 +22,6 @@ class MsTeamsImplementation:
     msteams_hookurl = ''
 
     def __init__(self, msteams_hookurl: str, title: str, description: str):        
-
         self.card_content = []
         self.current_section = []
 

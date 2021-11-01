@@ -4,9 +4,11 @@ from .msteams_adaptive_card_files_text import MsTeamsAdaptiveCardFilesText
 
 class MsTeamsAdaptiveCardFiles:
 
-    files_keys_list = []
-    text_files = MsTeamsAdaptiveCardFilesText()
-    image_files = MsTeamsAdaptiveCardFilesImage()
+    def __init__(self):
+        self.files_keys_list = []
+        self.text_files = MsTeamsAdaptiveCardFilesText()
+        self.image_files = MsTeamsAdaptiveCardFilesImage()
+
     def upload_files(self, file_blocks: list[FileBlock]) -> list[map]:
         image_section_map : map = self.image_files.create_files_for_presentation(file_blocks)
         text_files_section_list = self.text_files.create_files_for_presentation(file_blocks)
