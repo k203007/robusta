@@ -14,7 +14,6 @@ from ...core.reporting.utils import add_pngs_for_all_svgs
 from ...core.model.env_vars import TARGET_ID
 
 ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
-MsTeamsBlock = Dict[str, Any]
 
 class MsTeamsImplementation:
     # actual size according to the DOC is ~28K. according to what was tested max was 29,465

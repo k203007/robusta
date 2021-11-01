@@ -1,3 +1,4 @@
+import traceback, sys
 from pydantic.main import BaseModel
 
 from ..sink_config import SinkConfigBase
@@ -25,6 +26,7 @@ class MsTeamsSink(SinkBase):
             msTeamskSender.send_finding_to_msteams(msteams_implementation, finding)
         except Exception as e:
             logging.error(f"error in MsTeams Channel: {e}")
+            logging.error(traceback.format_exc())
 
     @staticmethod
     def write_finding_debug(msteams_hookurl: str, finding: Finding):
@@ -34,3 +36,5 @@ class MsTeamsSink(SinkBase):
             msTeamskSender.send_finding_to_msteams(msteams_implementation, finding)
         except Exception as e:
             logging.error(f"error in MsTeams Channel: {e}")
+            logging.error(traceback.format_exc())
+

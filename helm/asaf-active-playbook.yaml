@@ -11,12 +11,14 @@ sinks_config:
 global_config:
   sinks:
   - slack_sink
+  - msteams_sink
   cluster_name: kind-test10102021
 active_playbooks:
   - action_params:
       restart_reason: CrashLoopBackOff
     name: restart_loop_reporter
   - name: python_profiler
+  - name: prometheus_alert
   - action_params:
       alerts_config:
       - alert_name: KubeNodeNotReady
