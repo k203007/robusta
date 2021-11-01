@@ -10,10 +10,7 @@ from ...core.reporting.callbacks import PlaybookCallbackRequest
 from ...core.reporting.consts import SlackAnnotations
 from ...core.model.env_vars import TARGET_ID
 
-MsTeamsBlock = Dict[str, Any]
-
 class MsTeamskSender:
-    msteams_hookurl = ''
     def __to_msteams(self, block: BaseBlock):
         if self.__same_type(block, MarkdownBlock):
             self.msteams_implementation.markdown_block(block)

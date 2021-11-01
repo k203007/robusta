@@ -28,7 +28,11 @@ def main():
     finding = Finding('some title')
     finding.title = 'test'
     finding.description = 'this is a short desc\n\nanother line'
-    
+
+    finding2 = Finding('some title 2222')
+    finding.title = 'test222'
+    finding.description = 'this is a short desc\n\nanother line3333'
+
     markdown = MarkdownBlock('markdown text\n\n11111\n\n2222')
     markdown2 = MarkdownBlock('3333\n444444')    
 
@@ -65,8 +69,10 @@ def main():
     table = TableBlock([['row11', 'row12','row13', 'row14'],['row21', 'row22','row231111111111111111111111111', 'row24']], ['header1', 'header2', 'header3', 'header4'])
 
     #enrichment = Enrichment([diff, list_block, markdown,markdown2, text_file, text_file2, text_file3])
-    enrichment = Enrichment([table,text_file,text_file2,jpg_file,svg_file1, jpg_file2 ])
-    finding.enrichments.append(enrichment)
+    enrichment = Enrichment([table,text_file,text_file2,jpg_file,svg_file1, jpg_file2,text_file3 ])
+    finding.enrichments.append(Enrichment([text_file]))
+
+    finding2.enrichments.append(Enrichment([jpg_file2]))
     
 
 
@@ -78,6 +84,7 @@ def main():
 
     hook_url = "https://robusta650.webhook.office.com/webhookb2/b8b2b92a-02e9-4f5b-9c6f-3b77010d9cc6@34408606-07e6-4a82-98ac-c3668f4e57f5/IncomingWebhook/5479ec3149a34b99a0c7bca141787950/82e528f7-78de-4ded-9b84-0c6eb2c4883a"
     MsTeamsSink.write_finding_debug(hook_url, finding)
+    MsTeamsSink.write_finding_debug(hook_url, finding2)
     print('*** done222 ***')
 
 main()

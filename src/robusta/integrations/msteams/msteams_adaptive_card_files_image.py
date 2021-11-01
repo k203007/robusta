@@ -12,8 +12,9 @@ from ...core.reporting.blocks import *
 
 class MsTeamsAdaptiveCardFilesImage:
 
-    elements = MsTeamsAdaptiveCardElements()
-    url_map_list = []
+    def __init__(self):
+        self.elements = MsTeamsAdaptiveCardElements()
+        self.url_map_list = []
 
     def create_files_for_presentation(self, file_blocks: list[FileBlock]) -> map:
         images_list = []        

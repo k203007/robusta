@@ -5,26 +5,27 @@ from ...core.reporting.blocks import *
 
 class MsTeamsAdaptiveCardFilesText:
 
-    open_key_list = []
-    close_start_key_list = []
-    close_end_key_list = []
-    text_file_presentaiton_key_list = []
+    def __init__(self):
+        self.open_key_list = []
+        self.close_start_key_list = []
+        self.close_end_key_list = []
+        self.text_file_presentaiton_key_list = []
 
-    open_text_list = []
-    close_start_text_list = []
-    close_end_text_list = []
-    text_file_presentaiton_list = []
+        self.open_text_list = []
+        self.close_start_text_list = []
+        self.close_end_text_list = []
+        self.text_file_presentaiton_list = []
 
-    action_open_text_list = []
-    action_close_start_text_list = []
-    action_close_end_text_list = []
+        self.action_open_text_list = []
+        self.action_close_start_text_list = []
+        self.action_close_end_text_list = []
 
-    file_name_list = []
+        self.file_name_list = []
 
 
-    text_map_and_single_text_lines_list = []
+        self.text_map_and_single_text_lines_list = []
 
-    elements = MsTeamsAdaptiveCardElements()
+        self.elements = MsTeamsAdaptiveCardElements()
 
     def create_files_for_presentation(self, file_blocks: list[FileBlock]) -> list[map]:
         file_content_list = []

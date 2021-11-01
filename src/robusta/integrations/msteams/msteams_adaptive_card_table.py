@@ -9,8 +9,8 @@ from .msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
 from ...core.reporting.blocks import *
 
 class MsTeamsAdaptiveCardTable:
-    
-    elements = MsTeamsAdaptiveCardElements()
+    def __init__(self):
+        self.elements = MsTeamsAdaptiveCardElements()
 
     def create_table(self, header_list: list[str], rows: list[list[str]]) -> map:
         all_columns = []
