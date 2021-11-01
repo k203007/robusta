@@ -18,21 +18,24 @@ ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 class MsTeamsImplementation:
     # actual size according to the DOC is ~28K. according to what was tested max was 29,465
     # so we take 28K as MAX
-    MAX_SIZE_IN_BYTES = (1024 * 24)    
+    MAX_SIZE_IN_BYTES = (1024 * 20)
     msteams_hookurl = ''
 
-    card_content = []
-    current_section = []
+    def __init__(self, msteams_hookurl: str, title: str, description: str):        
 
-    text_map_and_single_text_lines_list__for_text_files = []
-    url_image_map__for_image_files = []
+        self.card_content = []
+        self.current_section = []
 
-    elements = MsTeamsAdaptiveCardElements()
+        self.text_map_and_single_text_lines_list__for_text_files = []
+        self.url_image_map__for_image_files = []
 
-    def __init__(self, msteams_hookurl: str, title: str, description: str):
+        self.elements = MsTeamsAdaptiveCardElements()
+
         self.msteams_hookurl = msteams_hookurl
         block = self.elements.text_block(text=title, font_size='extraLarge')
         self.__write_blocks_to_dict(self.card_content, block)
+
+        
         if description is not None:
             block = self.elements.text_block(text=description)
             self.__write_blocks_to_dict(self.card_content, block)
@@ -141,6 +144,7 @@ class MsTeamsImplementation:
             if not line_added:
                 return
 
+
     def send(self):
         try:
             self.__write_section_to_card()
@@ -151,9 +155,9 @@ class MsTeamsImplementation:
             print(self.__get_current_card_len(complete_card_map))
             response = requests.post(self.msteams_hookurl, json= complete_card_map)
             if 'error' in response.content.decode():
-                print('failed !!!!!')
+                print('faileddddddddddd')
                 raise Exception('error in sending') 
-            print('success')            
+            print('successsssssss')            
 
         except Exception as e:
             logging.error(f"error sending message to msteams\ne={e}\n")        
