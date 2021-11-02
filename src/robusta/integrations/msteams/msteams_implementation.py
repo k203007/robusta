@@ -73,9 +73,11 @@ class MsTeamsImplementation:
         self.__write_blocks_to_dict(self.current_section, [space_block,separator_block,space_block,space_block])
 
     def upload_files(self, file_blocks: list[FileBlock]):
-        self.__sub_section_separator()
         msteams_files = MsTeamsAdaptiveCardFiles()
         block_list : list = msteams_files.upload_files(file_blocks)
+        if len(block_list) > 0:
+            self.__sub_section_separator()
+
         self.text_map_and_single_text_lines_list__for_text_files += \
             msteams_files.get_text_map_and_single_text_lines_list__for_text_files()
         self.url_image_map__for_image_files += msteams_files.get_url_map_list()

@@ -52,15 +52,15 @@ class MsTeamskSender:
     def send_finding_to_msteams(self, msteams_implementation: MsTeamsImplementation, finding: Finding):
         self.msteams_implementation = msteams_implementation
         for enrichment in finding.enrichments:
-            
-            self.msteams_implementation.new_card_section()
-            
+                        
             files_blocks, other_blocks = self.__split_block_to_files_and_all_the_rest(enrichment)
 
             for block in other_blocks:
                 self.__to_msteams(block)
 
             self.msteams_implementation.upload_files(files_blocks)
+
+            self.msteams_implementation.new_card_section()
 
         self.msteams_implementation.send()
 
