@@ -70,8 +70,16 @@ def main():
 
     #enrichment = Enrichment([diff, list_block, markdown,markdown2, text_file, text_file2, text_file3])
     enrichment = Enrichment([table,text_file,text_file2,jpg_file,svg_file1, jpg_file2,text_file3 ])
-    finding.enrichments.append(Enrichment([text_file]))
 
+
+    m = '''Alert Explanation: This pod is throttled. It wanted to use the CPU and was blocked due to it's CPU limit (<https://github.com/robusta-dev/alert-explanations/wiki/CPUThrottlingHigh-(Prometheus-Alert)|learn more>)
+Tip: <https://github.com/robusta-dev/alert-explanations/wiki/CPUThrottlingHigh-(Prometheus-Alert)#low-cpu|This can occur even when CPU usage is far below the limit>.
+Robusta's Recommendation: Remove this pod's CPU limit entirely. <https://github.com/robusta-dev/alert-explanations/wiki/CPUThrottlingHigh-(Prometheus-Alert)#no-limits|This is safe as long as other pods have somewhat-accurate CPU requests>'''
+
+    markdown2 = MarkdownBlock(m)    
+
+
+    finding.enrichments.append(Enrichment([markdown2]))
     finding2.enrichments.append(Enrichment([jpg_file2]))
     
 

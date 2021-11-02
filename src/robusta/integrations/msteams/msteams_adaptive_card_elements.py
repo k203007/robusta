@@ -1,3 +1,4 @@
+from .msteams_mark_down_fix_url import MsTeamsMarkDOwnFixUrl
 
 class MsTeamsAdaptiveCardElements:
     __type = 'type'
@@ -44,7 +45,7 @@ class MsTeamsAdaptiveCardElements:
                 separator : bool = False, font_size : str = 'medium', horizontalAlignment : str = "left"):
         block = {}
         block[self.__type] = "TextBlock" 
-        block["text"] = text
+        block["text"] = MsTeamsMarkDOwnFixUrl().fix_text(text)
         block["size"] = font_size
         block["isVisible"] = isVisible        
         block["separator"] = separator
@@ -52,8 +53,7 @@ class MsTeamsAdaptiveCardElements:
 
         if isSubtle is not None:
             block["isSubtle"] = isSubtle 
-        #if wrap is not None:
-        block["wrap"] = True 
+        block["wrap"] = wrap 
         if weight is not None:
             block["weight"] = weight 
         return block
@@ -82,7 +82,6 @@ class MsTeamsAdaptiveCardElements:
                 block["width"] = "auto"
 
         block["isVisible"] = isVisible
-        block["isVisible"] = isVisible
         if key is not None:
             block["id"] = key
         block["items"] = items
@@ -107,25 +106,6 @@ class MsTeamsAdaptiveCardElements:
         return block_list
     
     def card(self, body : list[map]):
-        __BODY =  """{{
-                        "type":"message",
-                        "attachments":[
-                        {{
-                            "contentType":"application/vnd.microsoft.card.adaptive",
-                            "contentUrl":null,
-                            "content":{{
-                                "$schema":"http://adaptivecards.io/schemas/adaptive-card.json",
-                                "type":"AdaptiveCard",
-                                "version":"1.2",
-                                "msTeams": {{ "width": "full" }},
-                                "body":[
-                                    {0}  
-                                ]
-                            }}
-                        }}
-                        ]
-                    }}"""
-
         content = {}
         content["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json"
         content["type"] = "AdaptiveCard"
