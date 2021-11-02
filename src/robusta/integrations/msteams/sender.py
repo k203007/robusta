@@ -63,5 +63,3 @@ class MsTeamskSender:
             self.msteams_implementation.new_card_section()
 
         self.msteams_implementation.send()
-
-        

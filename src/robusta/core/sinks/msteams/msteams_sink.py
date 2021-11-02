@@ -20,21 +20,14 @@ class MsTeamsSink(SinkBase):
         self.sink_name = 'MsTeams'
 
     def write_finding(self, finding: Finding):
-        try:
-            msteams_implementation = MsTeamsImplementation(self.msteams_hookurl, finding.title, finding.description)
-            msTeamskSender = MsTeamskSender()
-            msTeamskSender.send_finding_to_msteams(msteams_implementation, finding)
-        except Exception as e:
-            logging.error(f"error in MsTeams Channel: {e}")
-            logging.error(traceback.format_exc())
+        MsTeamsSinkConfig.__send_to_msteams(self.msteams_hookurl, finding)
 
     @staticmethod
-    def write_finding_debug(msteams_hookurl: str, finding: Finding):
+    def __send_to_msteams(msteams_hookurl: str, finding: Finding):
         try:
             msteams_implementation = MsTeamsImplementation(msteams_hookurl, finding.title, finding.description)
             msTeamskSender = MsTeamskSender()
             msTeamskSender.send_finding_to_msteams(msteams_implementation, finding)
         except Exception as e:
-            logging.error(f"error in MsTeams Channel: {e}")
-            logging.error(traceback.format_exc())
+            logging.error(f"error in MsTeams Channel: {e}\n\n" + traceback.format_exc())
 

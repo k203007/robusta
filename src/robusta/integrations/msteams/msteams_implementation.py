@@ -1,4 +1,3 @@
-import sys,os
 import json
 import logging
 import requests
@@ -10,8 +9,6 @@ from .msteams_adaptive_card_files import MsTeamsAdaptiveCardFiles
 from .msteams_adaptive_card_table import MsTeamsAdaptiveCardTable
 from ...core.model.events import *
 from ...core.reporting.blocks import *
-from ...core.reporting.utils import add_pngs_for_all_svgs
-from ...core.model.env_vars import TARGET_ID
 
 ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 
@@ -145,7 +142,6 @@ class MsTeamsImplementation:
             if not line_added:
                 return
 
-
     def send(self):
         try:
             self.__write_section_to_card()
@@ -156,12 +152,12 @@ class MsTeamsImplementation:
             print(self.__get_current_card_len(complete_card_map))
             response = requests.post(self.msteams_hookurl, json= complete_card_map)
             if 'error' in response.content.decode():
-                print('faileddddddddddd')
+                print('failed !!!')
                 raise Exception('error in sending') 
-            print('successsssssss')            
+            print('success...')            
 
         except Exception as e:
-            logging.error(f"error sending message to msteams\ne={e}\n")        
+            logging.error(f"error sending message to msteams\ne={e}\n")   
 
     def __get_current_card_len(self, complete_card_map : map):
         return len(json.dumps(complete_card_map, ensure_ascii=True, indent=2))

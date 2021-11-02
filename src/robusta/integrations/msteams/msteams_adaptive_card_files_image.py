@@ -37,11 +37,11 @@ class MsTeamsAdaptiveCardFilesImage:
         return tmp_dir_path + '/' + str(uuid.uuid1())
 
     def __file_is_jpg(self, file_name: str):
-        return file_name.endswith('.jpg')
+        return file_name.lower().endswith('.jpg')
     def __file_is_png(self, file_name: str):
-        return file_name.endswith('.png')
+        return file_name.lower().endswith('.png')
     def __file_is_svg(self, file_name: str):
-        return file_name.endswith('.svg')
+        return file_name.lower().endswith('.svg')
     
     def __file_is_image(self, file_name: str):
         return self.__file_is_jpg(file_name) \

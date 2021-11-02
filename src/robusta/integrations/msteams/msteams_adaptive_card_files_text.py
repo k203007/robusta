@@ -100,6 +100,7 @@ class MsTeamsAdaptiveCardFilesText:
     
     # need to calc the approximate size of the file name + the prefix, otherwise it will spread on the entire line
     def __calc_file_name_width(self, index):
+        # TODO: maybe write separator of 1 or 2 empty strings (msteams trim the spaces)
         # taking the max letters so there wont be movement in textblock
         prefix_letters = 'close '
         prefix_letters.replace('','')
