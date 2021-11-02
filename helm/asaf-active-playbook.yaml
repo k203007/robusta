@@ -12,7 +12,8 @@ global_config:
   sinks:
   - slack_sink
   - msteams_sink
-  cluster_name: kind-test10102021
+  prometheus_url: http://loki-prometheus-server
+  cluster_name: kind-1102a
 active_playbooks:
   - action_params:
       restart_reason: CrashLoopBackOff
