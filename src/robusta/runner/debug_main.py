@@ -79,7 +79,7 @@ Robusta's Recommendation: Remove this pod's CPU limit entirely. <https://github.
     markdown2 = MarkdownBlock(m)    
 
 
-    finding.enrichments.append(Enrichment([markdown2]))
+    finding.enrichments.append(Enrichment([markdown2,list_block,list_block]))
     finding2.enrichments.append(Enrichment([jpg_file2]))
     
 
