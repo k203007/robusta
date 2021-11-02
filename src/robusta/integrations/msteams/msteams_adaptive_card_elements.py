@@ -52,8 +52,8 @@ class MsTeamsAdaptiveCardElements:
 
         if isSubtle is not None:
             block["isSubtle"] = isSubtle 
-        if wrap is not None:
-            block["wrap"] = wrap 
+        #if wrap is not None:
+        block["wrap"] = True 
         if weight is not None:
             block["weight"] = weight 
         return block
