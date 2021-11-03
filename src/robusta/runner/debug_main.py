@@ -79,8 +79,8 @@ Robusta's Recommendation: Remove this pod's CPU limit entirely. <https://github.
     markdown2 = MarkdownBlock(m)    
 
 
-    finding.enrichments.append(Enrichment([markdown2,list_block,list_block]))
-    finding2.enrichments.append(Enrichment([jpg_file2]))
+    finding.enrichments.append(Enrichment([text_file, text_file2]))
+    #finding2.enrichments.append(Enrichment([jpg_file2]))
     
 
 
@@ -92,7 +92,7 @@ Robusta's Recommendation: Remove this pod's CPU limit entirely. <https://github.
 
     hook_url = "https://robusta650.webhook.office.com/webhookb2/b8b2b92a-02e9-4f5b-9c6f-3b77010d9cc6@34408606-07e6-4a82-98ac-c3668f4e57f5/IncomingWebhook/5479ec3149a34b99a0c7bca141787950/82e528f7-78de-4ded-9b84-0c6eb2c4883a"
     MsTeamsSink.send_to_msteams(hook_url, finding)
-    MsTeamsSink.send_to_msteams(hook_url, finding2)
+    #MsTeamsSink.send_to_msteams(hook_url, finding2)
     print('*** done222 ***')
 
 main()

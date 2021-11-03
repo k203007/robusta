@@ -77,16 +77,17 @@ class MsTeamsAdaptiveCardFilesText:
         top_column_list = []
         botom_column_list = []
         for index in range(len(self.open_text_list)):
-            width = self.__calc_file_name_width(index)
-            
-            
-            top_column_list.append( self.elements.column(width_number=width, isVisible=True, key=self.open_key_list[index], 
+            top_column_list.append( self.elements.column(isVisible=True, key=self.open_key_list[index], 
                             items=[self.open_text_list[index]], action= self.action_open_text_list[index]))
 
-            top_column_list.append(  self.elements.column(width_number=width, isVisible=False, key=self.close_start_key_list[index], 
+            top_column_list.append(  self.elements.column(isVisible=False, key=self.close_start_key_list[index], 
                         items=[self.close_start_text_list[index]], action=self.action_close_start_text_list[index]))
 
-            botom_column_list.append(  self.elements.column(width_number=width, isVisible=False, key=self.close_end_key_list[index], 
+            # spaces between files
+            top_column_list.append(self.elements.column(isVisible=True, items=[self.elements.text_block(' ')]))
+            top_column_list.append(self.elements.column(isVisible=True, items=[self.elements.text_block(' ')]))
+
+            botom_column_list.append(  self.elements.column(isVisible=False, key=self.close_end_key_list[index], 
                         items=[self.close_end_text_list[index]], action=self.action_close_end_text_list[index]))
 
         top_column_set = self.elements.column_set(top_column_list)        
@@ -98,15 +99,6 @@ class MsTeamsAdaptiveCardFilesText:
 
         return list_to_return
     
-    # need to calc the approximate size of the file name + the prefix, otherwise it will spread on the entire line
-    def __calc_file_name_width(self, index):
-        # TODO: maybe write separator of 1 or 2 empty strings (msteams trim the spaces)
-        # taking the max letters so there wont be movement in textblock
-        prefix_letters = 'close '
-        prefix_letters.replace('','')
-        width = 7 * len(prefix_letters + self.file_name_list[index].replace('***', '')) + 40
-        return str(width)
-
     def __action(self, index, open : bool, title : str) -> map:
         visible_elements_map = {False : [], True : []}
         curr_key = self.open_key_list[index]

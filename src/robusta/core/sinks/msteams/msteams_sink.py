@@ -23,7 +23,7 @@ class MsTeamsSink(SinkBase):
         MsTeamsSinkConfig.__send_to_msteams(self.msteams_hookurl, finding)
 
     @staticmethod
-    def __send_to_msteams(msteams_hookurl: str, finding: Finding):
+    def send_to_msteams(msteams_hookurl: str, finding: Finding):
         try:
             msteams_implementation = MsTeamsImplementation(msteams_hookurl, finding.title, finding.description)
             msTeamskSender = MsTeamskSender()

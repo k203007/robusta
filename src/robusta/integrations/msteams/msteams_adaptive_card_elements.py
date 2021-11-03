@@ -69,12 +69,10 @@ class MsTeamsAdaptiveCardElements:
         block["items"] = items
         return block
 
-    def column(self, width_number: int = None, width_strech : bool = None, isVisible : bool = True, 
+    def column(self, width_strech : bool = False, isVisible : bool = True, 
                 key : str = None, items : list[map] = [], action : map = {}):
         block = {}
         block[self.__type] = "Column"
-        if width_number is not None:
-            block["width"] = str(width_number) + "px"
         if width_strech is not None:
             if width_strech:
                 block["width"] = "stretch"
