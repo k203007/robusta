@@ -1,6 +1,14 @@
 {
     "configurations": [
-
+        {
+            "name": "Python: run cli",
+            "type": "python",
+            "request": "launch",
+            "module": "robusta.cli.main",
+            //"program": "/workspaces/robusta/src/robusta/cli/main.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
         {
             "name": "runnning python",
             "type": "python",

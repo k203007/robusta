@@ -62,6 +62,24 @@ def slack_integration(
     if slack_channel is not None:
         replace_in_file(slack_param_file_name, "<DEFAULT_SLACK_CHANNEL>", slack_channel)
 
+def msteams_integration(
+    msteams_webhook: str, msteams_param_file_name: str, msteams_channel: str = None
+):
+    if msteams_webhook is None and typer.confirm(
+        "do you want to configure MSTeams integration? this is HIGHLY recommended.",
+        default=True,
+    ):
+        
+
+        msteams_webhook = typer.prompt("Set Incoming Webhook for MSTeams channel: ")
+
+
+    if msteams_webhook is not None:
+        replace_in_file(msteams_param_file_name, "<MSTEAMS_API_KEY>", msteams_webhook.strip())
+
+    if msteams_channel is not None:
+        replace_in_file(msteams_param_file_name, "<DEFAULT_MSTEAMS_CHANNEL>", msteams_channel)
+
 
 def guess_cluster_name():
     try:
