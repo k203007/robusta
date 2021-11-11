@@ -3,9 +3,13 @@ import uuid
 from .msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
 from ...core.reporting.blocks import *
 
+# TODO: try to create element for each open close text and for each Text Container that presents the file
+# and combine them in this class 
+
 class MsTeamsAdaptiveCardFilesText:
 
     def __init__(self):
+        # TODO: explain in comment the keys for open and close 
         self.open_key_list = []
         self.close_start_key_list = []
         self.close_end_key_list = []
@@ -140,7 +144,8 @@ class MsTeamsAdaptiveCardFilesText:
         return self.elements.container(key=key, items=[text_block])
 
     def __its_txt_file(self, file_name: str):
-        txt_prefix_list = ['.txt', '.json', '.yaml']
+        txt_prefix_list = ['.txt', '.json', '.yaml', '.log']
+        # TODO: make it with lower() and endwith()
         if file_name[-4:] in txt_prefix_list:
             return True
         return False

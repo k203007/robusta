@@ -8,6 +8,7 @@ from PIL import Image
 from .msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
 from ...core.reporting.blocks import *
 
+# TODO: change to TABLE element - try put everything in parameters in init 
 class MsTeamsAdaptiveCardTable:
     def __init__(self):
         self.elements = MsTeamsAdaptiveCardElements()

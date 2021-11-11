@@ -38,6 +38,7 @@ class HelmValues(BaseModel):
     slackApiKey: str = ""
     slackChannel: str = ""
     robustaApiKey: str = ""
+    msteamsWebhookUrl : str = ""
 
 
 CRASHPOD_YAML = "https://gist.githubusercontent.com/robusta-lab/283609047306dc1f05cf59806ade30b6/raw/crashpod.yaml"
@@ -106,6 +107,10 @@ def gen_config(
         "",
         help="Slack Channel",
     ),
+    msteams_webhook: str = typer.Option(
+        "",
+        help="Msteams webhook url",
+    ),
     robusta_api_key: str = typer.Option(None),
     output_path: str = typer.Option(
         "./generated_values.yaml", help="Output path of generated Helm values"
@@ -129,6 +134,17 @@ def gen_config(
             "Which slack channel should I send notifications to?"
         )
 
+    if not msteams_webhook and typer.confirm(
+        "Do you want to configure msteams integration ?",
+        default=True,
+    ):
+        msteams_webhook = typer.prompt(
+        "Please insert your msteams webhook url",
+        default=None,
+        )
+
+
+
     # we have a slightly different flow here than the other options so that pytest can pass robusta_api_key="" to skip
     # asking the question
     if robusta_api_key is None:
@@ -145,6 +161,8 @@ def gen_config(
         slackApiKey=slack_api_key,
         slackChannel=slack_channel,
         robustaApiKey=robusta_api_key,
+        msteamsWebhookUrl=msteams_webhook,
+
     )
 
     with open(output_path, "w") as output_file:

@@ -12,6 +12,8 @@ from ...core.reporting.blocks import *
 
 ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 
+# TODO: make subscetion and section the inherits from ELEMENTS
+
 class MsTeamsImplementation:
     # actual size according to the DOC is ~28K. according to what was tested max was 29,465
     # so we take 28K as MAX

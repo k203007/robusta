@@ -9,7 +9,8 @@ from PIL import Image
 from .msteams_adaptive_card_elements  import MsTeamsAdaptiveCardElements
 from ...core.reporting.blocks import *
 
-
+# TODO: in read me write that you CANT !!!! UPLOAD files to msteams sharepoint !!!! put the references
+# TODO: convert svg to  jpg usign CAIROSVG.svgtopng
 class MsTeamsAdaptiveCardFilesImage:
 
     def __init__(self):

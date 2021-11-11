@@ -1,5 +1,7 @@
 from .msteams_mark_down_fix_url import MsTeamsMarkDOwnFixUrl
 
+# TODO: class for each element the inherits from MAP
+# TODO: create a monsterous readme with all the link to websites I found
 class MsTeamsAdaptiveCardElements:
     __type = 'type'
 
