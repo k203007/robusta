@@ -11,6 +11,8 @@ from ...core.reporting.consts import SlackAnnotations
 from ...core.model.env_vars import TARGET_ID
 
 class MsTeamskSender:
+    # TODO: move msteams implementation as parameter 
+    # TODO: check again __same_type - use isinstance instead
     def __to_msteams(self, block: BaseBlock):
         if self.__same_type(block, MarkdownBlock):
             self.msteams_implementation.markdown_block(block)
@@ -25,10 +27,8 @@ class MsTeamskSender:
         elif self.__same_type(block, KubernetesDiffBlock):
             self.msteams_implementation.diff(block)
         elif self.__same_type(block, CallbackBlock):
-            context = block.context.copy()
-            context["target_id"] = TARGET_ID
-            self.msteams_implementation.get_action_block_for_choices(self.myTeamsMessage,
-                block.choices, json.dumps(context)
+            logging.error(
+                f"CallbackBlock not supported for msteams"
             )
         else:
             logging.error(

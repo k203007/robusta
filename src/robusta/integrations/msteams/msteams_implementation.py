@@ -13,7 +13,7 @@ from ...core.reporting.blocks import *
 ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 
 # TODO: make subscetion and section the inherits from ELEMENTS
-
+# TODO: change to MsTeamsSingleMsg
 class MsTeamsImplementation:
     # actual size according to the DOC is ~28K.
     # it's hard to determine the real size because for example there can be large images that doesn't count
@@ -22,8 +22,11 @@ class MsTeamsImplementation:
     MAX_SIZE_IN_BYTES = (1024 * 20)
     msteams_hookurl = ''
 
+
+
+    # move out the title and description - call it in the sender
     def __init__(self, msteams_hookurl: str, title: str, description: str):        
-        self.card_content = []
+        self.entire_msg = []
         self.current_section = []
 
         self.text_map_and_single_text_lines_list__for_text_files = []
@@ -33,13 +36,14 @@ class MsTeamsImplementation:
 
         self.msteams_hookurl = msteams_hookurl
         block = self.elements.text_block(text=title, font_size='extraLarge')
-        self.__write_blocks_to_dict(self.card_content, block)
+        self.__write_blocks_to_dict(self.entire_msg, block)
 
         
         if description is not None:
             block = self.elements.text_block(text=description)
-            self.__write_blocks_to_dict(self.card_content, block)
+            self.__write_blocks_to_dict(self.entire_msg, block)
 
+    # TODO: make __write_section_to_card public - WRITE_CURRENT_SECTION
     def new_card_section(self):
         # write previous section
         self.__write_section_to_card()
@@ -48,24 +52,28 @@ class MsTeamsImplementation:
         if len(self.current_section) == 0:
             return
 
+        # TODO: elements
         space_block = self.elements.text_block(text=' ', font_size='small')
         separator_block = self.elements.text_block(text=' ',separator=True)
         column_block = self.elements.column(items=[space_block,separator_block], width_strech= True)
-        column_set_block = self.elements.column_set([column_block])
+        underline_block = self.elements.column_set([column_block])
 
-        self.__write_blocks_to_dict(self.card_content, column_set_block)
-        self.__write_blocks_to_dict(self.card_content, self.current_section)
+        self.__write_blocks_to_dict(self.entire_msg, underline_block)
+        self.__write_blocks_to_dict(self.entire_msg, self.current_section)
         self.current_section = []
 
-    def __write_blocks_to_dict(self, dict : list[map], blocks):
+    # TODO: always move list of elements
+    # 2 function for entire msg and current section
+    def __write_blocks_to_dict(self, dict_list : list[map], blocks):
         if isinstance(blocks, Mapping):
             if blocks:
-                dict.append(blocks)
+                dict_list.append(blocks)
             return
         for block in blocks:
             if block:
-                dict.append(block)
+                dict_list.append(block)
 
+    # TODO: elements
     def __sub_section_separator(self):
         if len(self.current_section) == 0:
             return
@@ -73,6 +81,7 @@ class MsTeamsImplementation:
         separator_block = self.elements.text_block(text='_' * 30, font_size='small', horizontalAlignment='center')
         self.__write_blocks_to_dict(self.current_section, [space_block,separator_block,space_block,space_block])
 
+    # TODO - return list of elements - remove all lines
     def upload_files(self, file_blocks: list[FileBlock]):
         msteams_files = MsTeamsAdaptiveCardFiles()
         block_list : list = msteams_files.upload_files(file_blocks)
@@ -90,7 +99,9 @@ class MsTeamsImplementation:
         msteam_table = MsTeamsAdaptiveCardTable()
         table = msteam_table.create_table(table_block.headers, table_block.rows)
         self.__write_blocks_to_dict(self.current_section, table)
-
+    
+    # TODO: apply length limit
+    # TODO: CHECK IF THERE IS LIMIT IN TEXT BLOCK - IF NOT DELETE APPLY_LENGTH_LIMIT
     def list_of_strings(self, list_block: ListBlock):
         self.__sub_section_separator()
         for line in list_block.items:
@@ -118,11 +129,8 @@ class MsTeamsImplementation:
         current_header_string = self.__apply_length_limit(block.text, 150) + self.__new_line_replacer('\n\n')
         self.__write_blocks_to_dict(self.current_section, self.elements.text_block(current_header_string, font_size='large'))
 
-    def get_action_block_for_choices(self, choices: Dict[str, Callable] = None, context=""):
-        if choices is None:
-          return
-
     # dont include the base 64 images in the total size calculation
+    # TODO: ELEMENT of textfileElement
     def _put_text_files_data_up_to_max_limit(self, card_map : map):
         curr_images_len = 0
         for image_map in self.url_image_map__for_image_files:
@@ -146,18 +154,23 @@ class MsTeamsImplementation:
             if not line_added:
                 return
 
+    # TODO: write explanation about the interactive and need to be URL.
+    # USE: postman as debug
     def send(self):
         try:
+            # TODO: do i need this here ?
             self.__write_section_to_card()
-            complete_card_map = self.elements.card(self.card_content)
+
+            complete_card_map = self.elements.card(self.entire_msg)
             self._put_text_files_data_up_to_max_limit(complete_card_map)
 
             #print(json.dumps(complete_card_map, ensure_ascii=False))      
-            print(self.__get_current_card_len(complete_card_map))
+            # print(self.__get_current_card_len(complete_card_map))
             response = requests.post(self.msteams_hookurl, json= complete_card_map)
             if 'error' in response.content.decode():
                 print('failed !!!')
-                raise Exception('error in sending') 
+                # TODO: make sure its OK
+                raise Exception('error in sending: ' + response.content.decode()) 
             print('success...')            
 
         except Exception as e:
