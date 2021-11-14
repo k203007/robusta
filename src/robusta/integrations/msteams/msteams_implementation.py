@@ -15,8 +15,10 @@ ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 # TODO: make subscetion and section the inherits from ELEMENTS
 
 class MsTeamsImplementation:
-    # actual size according to the DOC is ~28K. according to what was tested max was 29,465
-    # so we take 28K as MAX
+    # actual size according to the DOC is ~28K.
+    # it's hard to determine the real size because for example there can be large images that doesn't count
+    # and converting the map to json doesn't give us an exact indication of the size so we need to take 
+    # a safe zone of less then 28K
     MAX_SIZE_IN_BYTES = (1024 * 20)
     msteams_hookurl = ''
 
