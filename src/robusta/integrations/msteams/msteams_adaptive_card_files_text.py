@@ -145,7 +145,7 @@ class MsTeamsAdaptiveCardFilesText:
 
     def __its_txt_file(self, file_name: str):
         txt_prefix_list = ['.txt', '.json', '.yaml', '.log']
-        # TODO: make it with lower() and endwith()
-        if file_name[-4:] in txt_prefix_list:
-            return True
+        for prefix in txt_prefix_list:
+            if file_name.lower().endswith(prefix):
+                return True
         return False
