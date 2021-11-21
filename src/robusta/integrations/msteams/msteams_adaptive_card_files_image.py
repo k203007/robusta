@@ -10,7 +10,6 @@ from ...core.reporting.blocks import *
 from .msteams_elements.msteams_images_element import MsTeamsImagesElement
 from cairosvg import svg2png
 
-# TODO: in read me write that you CANT !!!! UPLOAD files to msteams sharepoint !!!! put the references
 class MsTeamsAdaptiveCardFilesImage:
 
     def __init__(self):
