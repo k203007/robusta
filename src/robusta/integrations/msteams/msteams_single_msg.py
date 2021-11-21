@@ -11,6 +11,7 @@ from ...core.reporting.blocks import *
 from .msteams_elements.msteams_text_block_element import MsTeamsTextBlockElement
 from .msteams_elements.msteams_colum_element import MsTeamsColumnElement
 from .msteams_elements.msteams_card_element import MsTeamsCardElement
+from .msteams_elements.msteams_images_element import MsTeamsImagesElement
 
 ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 
@@ -43,7 +44,6 @@ class MsTeamsSingleMsg:
         if len(self.current_section) == 0:
             return
 
-        # TODO: elements
         space_block = MsTeamsTextBlockElement(text=' ', font_size='small')
         separator_block = MsTeamsTextBlockElement(text=' ',separator=True)
 
@@ -60,7 +60,6 @@ class MsTeamsSingleMsg:
     def __write_to_current_section(self, blocks : list[MsTeamsBaseElement]):
         self.current_section += blocks
 
-    # TODO: elements
     def __sub_section_separator(self):
         if len(self.current_section) == 0:
             return
@@ -118,34 +117,34 @@ class MsTeamsSingleMsg:
 
     # dont include the base 64 images in the total size calculation
     # TODO: ELEMENT of textfileElement
-    def _put_text_files_data_up_to_max_limit(self, card_map : map):
+    def _put_text_files_data_up_to_max_limit(self, complete_card_map : map):
         curr_images_len = 0
-        for image_map in self.url_image_map__for_image_files:
-            curr_images_len += self.elements.get_image_url_size(image_map)
-        max_len_left = self.MAX_SIZE_IN_BYTES - (self.__get_current_card_len(card_map) - curr_images_len)
+        for element in self.entire_msg:
+            if type(element).__name__ == MsTeamsImagesElement.__name__:
+                curr_images_len += element.get_images_len_in_bytes()
+        max_len_left = self.MAX_SIZE_IN_BYTES - (self.__get_current_card_len(complete_card_map) - curr_images_len)
 
         curr_line = 0
         while True:
             line_added = False
             curr_line += 1            
-            for text_map, lines in self.text_map_and_single_text_lines_list__for_text_files:
+            for text_element, lines in self.text_map_and_single_text_lines_list__for_text_files:
                 if len(lines) < curr_line:
                     continue
                 line = lines[len(lines) - curr_line]
                 max_len_left -= len(line)
                 if max_len_left < 0:
                     return
-                new_text_value = line + self.elements.get_text_from_block(text_map)
-                self.elements.set_text_from_block(text_map, new_text_value)
+                new_text_value = line + text_element.get_text_from_block()
+                text_element.set_text_from_block(new_text_value)
                 line_added = True
             if not line_added:
                 return
 
     def send(self):
         try:
-            complete_card_map = MsTeamsCardElement(self.entire_msg).get_map_value()
-            # TODO: restore it
-            # self._put_text_files_data_up_to_max_limit(complete_card_map)
+            complete_card_map : map = MsTeamsCardElement(self.entire_msg).get_map_value()
+            self._put_text_files_data_up_to_max_limit(complete_card_map)
 
             #print(json.dumps(complete_card_map, ensure_ascii=False))
             # print(self.__get_current_card_len(complete_card_map))
