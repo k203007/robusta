@@ -69,7 +69,7 @@ def main():
     table = TableBlock([['row11', 'row12','row13', 'row14'],['row21', 'row22','row231111111111111111111111111', 'row24']], ['header1', 'header2', 'header3', 'header4'])
 
     #enrichment = Enrichment([diff, list_block, markdown,markdown2, text_file, text_file2, text_file3])
-    enrichment = Enrichment([table,text_file,text_file2,jpg_file,svg_file1, jpg_file2,text_file3 ])
+    enrichment = Enrichment([diff, list_block,markdown,markdown2,table,text_file,text_file2,jpg_file,svg_file1, jpg_file2,text_file3 ])
 
 
     m = '''Alert Explanation: This pod is throttled. It wanted to use the CPU and was blocked due to it's CPU limit (<https://github.com/robusta-dev/alert-explanations/wiki/CPUThrottlingHigh-(Prometheus-Alert)|learn more>)
