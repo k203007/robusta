@@ -4,7 +4,7 @@ import requests
 from collections.abc import Mapping
 
 from .msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
-
+from .msteams_elements.msteams_base_element import MsTeamsBaseElement
 from .msteams_adaptive_card_files import MsTeamsAdaptiveCardFiles
 from .msteams_elements.msteams_table_element import MsTeamsTableElement
 from ...core.model.events import *
@@ -12,7 +12,6 @@ from ...core.reporting.blocks import *
 
 ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 
-# TODO: make subscetion and section the inherits from ELEMENTS
 class MsTeamsSingleMsg:
     # actual size according to the DOC is ~28K.
     # it's hard to determine the real size because for example there can be large images that doesn't count
@@ -22,8 +21,8 @@ class MsTeamsSingleMsg:
     msteams_hookurl = ''
 
     def __init__(self, msteams_hookurl: str):
-        self.entire_msg = []
-        self.current_section = []
+        self.entire_msg : list[MsTeamsBaseElement] = []
+        self.current_section : list[MsTeamsBaseElement] = []
 
         self.text_map_and_single_text_lines_list__for_text_files = []
         self.url_image_map__for_image_files = []
@@ -33,12 +32,11 @@ class MsTeamsSingleMsg:
 
     def write_title_and_desc(self, title: str, description: str):
         block = self.elements.text_block(text=title, font_size='extraLarge')
-        self.__write_blocks_to_dict(self.entire_msg, block)
-
+        self.__write_to_entire_msg(block)
         
         if description is not None:
             block = self.elements.text_block(text=description)
-            self.__write_blocks_to_dict(self.entire_msg, block)
+            self.__write_to_entire_msg(block)
 
     def write_current_section(self):
         if len(self.current_section) == 0:
@@ -50,20 +48,15 @@ class MsTeamsSingleMsg:
         column_block = self.elements.column(items=[space_block,separator_block], width_strech= True)
         underline_block = self.elements.column_set([column_block])
 
-        self.__write_blocks_to_dict(self.entire_msg, underline_block)
-        self.__write_blocks_to_dict(self.entire_msg, self.current_section)
+        self.__write_to_entire_msg(underline_block)
+        self.__write_to_entire_msg(self.current_section)
         self.current_section = []
 
-    # TODO: always move list of elements
-    # 2 function for entire msg and current section
-    def __write_blocks_to_dict(self, dict_list : list[map], blocks):
-        if isinstance(blocks, Mapping):
-            if blocks:
-                dict_list.append(blocks)
-            return
-        for block in blocks:
-            if block:
-                dict_list.append(block)
+    def __write_to_entire_msg(self, blocks : list[MsTeamsBaseElement]):
+        self.entire_msg += blocks
+
+    def __write_to_current_section(self, blocks : list[MsTeamsBaseElement]):
+        self.current_section += blocks
 
     # TODO: elements
     def __sub_section_separator(self):
@@ -71,7 +64,7 @@ class MsTeamsSingleMsg:
             return
         space_block = self.elements.text_block(text=' ', font_size='small')
         separator_block = self.elements.text_block(text='_' * 30, font_size='small', horizontalAlignment='center')
-        self.__write_blocks_to_dict(self.current_section, [space_block,separator_block,space_block,space_block])
+        self.__write_to_current_section([space_block,separator_block,space_block,space_block])
 
     # TODO - return list of elements - remove all lines
     def upload_files(self, file_blocks: list[FileBlock]):
@@ -84,12 +77,12 @@ class MsTeamsSingleMsg:
             msteams_files.get_text_map_and_single_text_lines_list__for_text_files()
         self.url_image_map__for_image_files += msteams_files.get_url_map_list()
         
-        self.__write_blocks_to_dict(self.current_section, block_list)
+        self.__write_to_current_section(block_list)
 
     def table(self, table_block : TableBlock):
         self.__sub_section_separator()
         msteam_table = MsTeamsTableElement(table_block.headers, table_block.rows)
-        self.__write_blocks_to_dict(self.current_section, msteam_table)
+        self.__write_to_current_section(msteam_table)
     
     # TODO: apply length limit
     # TODO: CHECK IF THERE IS LIMIT IN TEXT BLOCK - IF NOT DELETE APPLY_LENGTH_LIMIT
@@ -97,7 +90,7 @@ class MsTeamsSingleMsg:
         self.__sub_section_separator()
         for line in list_block.items:
             line_with_point = '\n- ' + line + '\n'
-            self.__write_blocks_to_dict(self.current_section, self.elements.text_block(line_with_point))
+            self.__write_to_current_section(self.elements.text_block(line_with_point))
 
     def diff(self, block: KubernetesDiffBlock):
         rows = []
@@ -111,14 +104,14 @@ class MsTeamsSingleMsg:
         if not block.text:
             return
         text = self.__apply_length_limit(block.text) + self.__new_line_replacer('\n\n')
-        self.__write_blocks_to_dict(self.current_section, self.elements.text_block(text))
+        self.__write_to_current_section(self.elements.text_block(text))
 
     def divider_block(self, block: BaseBlock):
-        self.__write_blocks_to_dict(self.current_section, self.elements.text_block(self.__new_line_replacer('\n\n')))
+        self.__write_to_current_section(self.elements.text_block(self.__new_line_replacer('\n\n')))
 
     def header_block(self, block: BaseBlock):
         current_header_string = self.__apply_length_limit(block.text, 150) + self.__new_line_replacer('\n\n')
-        self.__write_blocks_to_dict(self.current_section, self.elements.text_block(current_header_string, font_size='large'))
+        self.__write_to_current_section(self.elements.text_block(current_header_string, font_size='large'))
 
     # dont include the base 64 images in the total size calculation
     # TODO: ELEMENT of textfileElement
