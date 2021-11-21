@@ -1,4 +1,5 @@
 from .msteams_base_element import MsTeamsBaseElement
+from .msteams_action_element import MsTeamsActionElement
 
 class MsTeamsColumnElement(MsTeamsBaseElement):
     
@@ -13,7 +14,7 @@ class MsTeamsColumnElement(MsTeamsBaseElement):
         return block
 
     def single_column(self, width_strech : bool = False, isVisible : bool = True, 
-                key : str = None, items : list[map] = [], action : map = {}):
+                key : str = None, items : list[map] = [], action : MsTeamsActionElement = {}):
         block = {}
         block['type'] = "Column"
         if width_strech is not None:
