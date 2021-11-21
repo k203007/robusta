@@ -60,7 +60,7 @@ class MsTeamsAdaptiveCardFilesText:
             self.__manage_blocks_for_single_file(index, self.file_name_list[index], file_content_list[index])
         return self.__manage_all_text_to_send()
 
-    def get_text_map_and_single_text_lines_list(self):
+    def get_text_files_containers_list(self):
         return self.text_map_and_single_text_lines_list
 
     def __create_new_keys(self):

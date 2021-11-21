@@ -27,7 +27,7 @@ class MsTeamsSingleMsg:
         self.entire_msg : list[MsTeamsBaseElement] = []
         self.current_section : list[MsTeamsBaseElement] = []
 
-        self.text_map_and_single_text_lines_list__for_text_files = []
+        self.text_file_containers_list = []
 
         self.msteams_hookurl = msteams_hookurl
 
@@ -73,8 +73,8 @@ class MsTeamsSingleMsg:
         if len(block_list) > 0:
             self.__sub_section_separator()
 
-        self.text_map_and_single_text_lines_list__for_text_files += \
-            msteams_files.get_text_map_and_single_text_lines_list__for_text_files()
+        self.text_file_containers_list += \
+            msteams_files.get_text_files_containers_list()
         
         self.__write_to_current_section(block_list)
 
@@ -126,7 +126,7 @@ class MsTeamsSingleMsg:
         while True:
             line_added = False
             curr_line += 1            
-            for text_element, lines in self.text_map_and_single_text_lines_list__for_text_files:
+            for text_element, lines in self.text_file_containers_list:
                 if len(lines) < curr_line:
                     continue
                 line = lines[len(lines) - curr_line]

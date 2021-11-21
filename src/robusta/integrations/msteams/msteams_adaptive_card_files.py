@@ -23,6 +23,8 @@ class MsTeamsAdaptiveCardFiles(MsTeamsBaseElement):
             image_section_map = []
         return text_files_section_list  + image_section_map
 
-    # TODO - make this shorter and more clear
-    def get_text_map_and_single_text_lines_list__for_text_files(self):
-        return self.text_files.get_text_map_and_single_text_lines_list()
+    # return the list of text containers with the list of lines, so later ater 
+    # calculating the length of bytes left in the message, we can put the 
+    # lines evenly in each text container so we dont excced the msg length
+    def get_text_files_containers_list(self):
+        return self.text_files.get_text_files_containers_list()
