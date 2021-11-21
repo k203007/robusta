@@ -6,29 +6,26 @@ from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 from PIL import Image
 
-from .msteams_adaptive_card_elements  import MsTeamsAdaptiveCardElements
 from ...core.reporting.blocks import *
+from .msteams_elements.msteams_images_element import MsTeamsImagesElement
 
 # TODO: in read me write that you CANT !!!! UPLOAD files to msteams sharepoint !!!! put the references
 # TODO: convert svg to  jpg usign CAIROSVG.svgtopng
 class MsTeamsAdaptiveCardFilesImage:
 
     def __init__(self):
-        self.elements = MsTeamsAdaptiveCardElements()
         self.url_map_list = []
 
     def create_files_for_presentation(self, file_blocks: list[FileBlock]) -> map:
-        images_list = []        
+        url_list = []        
         for file_block in file_blocks:
             if not self.__file_is_image(file_block.filename):
                 continue
             data_url = self.__convert_bytes_to_base_64_url(file_block.filename, file_block.contents)
-            image_map = self.elements.present_image(data_url)
-            self.url_map_list.append(image_map)
-            images_list.append(self.elements.present_image(data_url))
-        if len(images_list) == 0:
-            return {}
-        return self.elements.image_set(images_list)
+            url_list.append(data_url)
+        if len(url_list) == 0:
+            return []
+        return MsTeamsImagesElement(url_list)
 
     def get_url_map_list(self):
         return self.url_map_list
