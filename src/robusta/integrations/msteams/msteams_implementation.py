@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from .msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
 
 from .msteams_adaptive_card_files import MsTeamsAdaptiveCardFiles
-from .msteams_adaptive_card_table import MsTeamsAdaptiveCardTable
+from .msteams_elements.msteams_table_element import MsTeamsTableElement
 from ...core.model.events import *
 from ...core.reporting.blocks import *
 
@@ -96,9 +96,8 @@ class MsTeamsImplementation:
 
     def table(self, table_block : TableBlock):
         self.__sub_section_separator()
-        msteam_table = MsTeamsAdaptiveCardTable()
-        table = msteam_table.create_table(table_block.headers, table_block.rows)
-        self.__write_blocks_to_dict(self.current_section, table)
+        msteam_table = MsTeamsTableElement(table_block.headers, table_block.rows)
+        self.__write_blocks_to_dict(self.current_section, msteam_table)
     
     # TODO: apply length limit
     # TODO: CHECK IF THERE IS LIMIT IN TEXT BLOCK - IF NOT DELETE APPLY_LENGTH_LIMIT
