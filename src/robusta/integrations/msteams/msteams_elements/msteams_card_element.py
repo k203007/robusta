@@ -23,5 +23,5 @@ class MsTeamsCardElement(MsTeamsBaseElement):
     def __to_map_list(self, elements : list[MsTeamsBaseElement]):
         curr_list = []
         for e in elements:
-            curr_list = curr_list + e.get_map_values()
+            curr_list.append(e.get_map_value())
         return curr_list

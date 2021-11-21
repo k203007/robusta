@@ -25,6 +25,7 @@ class MsTeamsTextBlockElement(MsTeamsBaseElement):
         self.block["wrap"] = True
         if weight is not None:
             self.block["weight"] = weight 
+        return self.block
 
     def get_text_from_block(self) -> str:
         return self.block["text"]

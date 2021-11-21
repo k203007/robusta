@@ -14,5 +14,11 @@ class MsTeamsContainerElement(MsTeamsBaseElement):
         if key is not None:
             block["id"] = key
         block["bleed"] = False
-        block["items"] = MsTeamsBaseElement.get_map_list(elements)
+        block["items"] = self.__get_map_list(elements)
         return block
+
+    def __get_map_list(self, elements: list[MsTeamsBaseElement]):
+        map_list = []
+        for e in elements:
+            map_list.append(e.get_map_value)
+        return map_list

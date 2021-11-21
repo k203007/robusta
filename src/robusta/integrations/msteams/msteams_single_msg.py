@@ -3,13 +3,14 @@ import logging
 import requests
 from collections.abc import Mapping
 
-from .msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
 from .msteams_elements.msteams_base_element import MsTeamsBaseElement
 from .msteams_adaptive_card_files import MsTeamsAdaptiveCardFiles
 from .msteams_elements.msteams_table_element import MsTeamsTableElement
 from ...core.model.events import *
 from ...core.reporting.blocks import *
 from .msteams_elements.msteams_text_block_element import MsTeamsTextBlockElement
+from .msteams_elements.msteams_colum_element import MsTeamsColumnElement
+from .msteams_elements.msteams_card_element import MsTeamsCardElement
 
 ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 
@@ -32,11 +33,11 @@ class MsTeamsSingleMsg:
 
     def write_title_and_desc(self, title: str, description: str):
         block = MsTeamsTextBlockElement(text=title, font_size='extraLarge')
-        self.__write_to_entire_msg(block)
+        self.__write_to_entire_msg([block])
         
         if description is not None:
             block = MsTeamsTextBlockElement(text=description)
-            self.__write_to_entire_msg(block)
+            self.__write_to_entire_msg([block])
 
     def write_current_section(self):
         if len(self.current_section) == 0:
@@ -45,10 +46,11 @@ class MsTeamsSingleMsg:
         # TODO: elements
         space_block = MsTeamsTextBlockElement(text=' ', font_size='small')
         separator_block = MsTeamsTextBlockElement(text=' ',separator=True)
-        column_block = self.elements.column(items=[space_block,separator_block], width_strech= True)
-        underline_block = self.elements.column_set([column_block])
 
-        self.__write_to_entire_msg(underline_block)
+        underline_block = MsTeamsColumnElement()
+        underline_block.single_column(items=[space_block,separator_block], width_strech = True)
+
+        self.__write_to_entire_msg([underline_block])
         self.__write_to_entire_msg(self.current_section)
         self.current_section = []
 
@@ -82,7 +84,7 @@ class MsTeamsSingleMsg:
     def table(self, table_block : TableBlock):
         self.__sub_section_separator()
         msteam_table = MsTeamsTableElement(table_block.headers, table_block.rows)
-        self.__write_to_current_section(msteam_table)
+        self.__write_to_current_section([msteam_table])
     
     # TODO: apply length limit
     # TODO: CHECK IF THERE IS LIMIT IN TEXT BLOCK - IF NOT DELETE APPLY_LENGTH_LIMIT
@@ -90,7 +92,7 @@ class MsTeamsSingleMsg:
         self.__sub_section_separator()
         for line in list_block.items:
             line_with_point = '\n- ' + line + '\n'
-            self.__write_to_current_section(MsTeamsTextBlockElement(line_with_point))
+            self.__write_to_current_section([MsTeamsTextBlockElement(line_with_point)])
 
     def diff(self, block: KubernetesDiffBlock):
         rows = []
@@ -104,14 +106,14 @@ class MsTeamsSingleMsg:
         if not block.text:
             return
         text = self.__apply_length_limit(block.text) + self.__new_line_replacer('\n\n')
-        self.__write_to_current_section(MsTeamsTextBlockElement(text))
+        self.__write_to_current_section([MsTeamsTextBlockElement(text)])
 
     def divider_block(self, block: BaseBlock):
-        self.__write_to_current_section(MsTeamsTextBlockElement(self.__new_line_replacer('\n\n')))
+        self.__write_to_current_section([MsTeamsTextBlockElement(self.__new_line_replacer('\n\n'))])
 
     def header_block(self, block: BaseBlock):
         current_header_string = self.__apply_length_limit(block.text, 150) + self.__new_line_replacer('\n\n')
-        self.__write_to_current_section(MsTeamsTextBlockElement(current_header_string, font_size='large'))
+        self.__write_to_current_section([MsTeamsTextBlockElement(current_header_string, font_size='large')])
 
     # dont include the base 64 images in the total size calculation
     # TODO: ELEMENT of textfileElement
@@ -140,11 +142,14 @@ class MsTeamsSingleMsg:
 
     def send(self):
         try:
-            complete_card_map = self.elements.card(self.entire_msg)
-            self._put_text_files_data_up_to_max_limit(complete_card_map)
+            complete_card_map = MsTeamsCardElement(self.entire_msg).get_map_value()
+            # TODO: restore it
+            # self._put_text_files_data_up_to_max_limit(complete_card_map)
 
             #print(json.dumps(complete_card_map, ensure_ascii=False))      
             # print(self.__get_current_card_len(complete_card_map))
+            print('\n\n\n\n\n' + json.dumps(complete_card_map, indent=4))      
+
             response = requests.post(self.msteams_hookurl, json= complete_card_map)
             if 'error' in response.content.decode():
                 print('failed !!!')
