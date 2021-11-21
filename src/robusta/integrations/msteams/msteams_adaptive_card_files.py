@@ -6,11 +6,10 @@ class MsTeamsAdaptiveCardFiles():
 
     def __init__(self):
         self.text_files = MsTeamsAdaptiveCardFilesText()
-        self.image_files = MsTeamsAdaptiveCardFilesImage()        
 
     # return list of MsTeamsBaseElement - cant return it in the constructor.
     def upload_files(self, file_blocks: list[FileBlock]) -> list[map]:
-        image_section_map : map = self.image_files.create_files_for_presentation(file_blocks)
+        image_section_map : map = MsTeamsAdaptiveCardFilesImage().create_files_for_presentation(file_blocks)
         text_files_section_list = self.text_files.create_files_for_presentation(file_blocks)
 
         if image_section_map:
