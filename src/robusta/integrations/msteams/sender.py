@@ -2,7 +2,7 @@ import json
 import logging
 import tempfile
 
-from .msteams_implementation import *
+from .msteams_single_msg import *
 from ...core.model.events import *
 from ...core.reporting.blocks import *
 from ...core.reporting.utils import add_pngs_for_all_svgs
