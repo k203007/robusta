@@ -11,21 +11,19 @@ from ...core.reporting.consts import SlackAnnotations
 from ...core.model.env_vars import TARGET_ID
 
 class MsTeamskSender:
-    # TODO: move msteams implementation as parameter 
-    # TODO: check again __same_type - use isinstance instead
-    def __to_msteams(self, block: BaseBlock):
+    def __to_msteams(self, block: BaseBlock, msteams_implementation: MsTeamsImplementation):
         if self.__same_type(block, MarkdownBlock):
-            self.msteams_implementation.markdown_block(block)
+            msteams_implementation.markdown_block(block)
         elif self.__same_type(block, DividerBlock):
-            self.msteams_implementation.divider_block(block)
+            msteams_implementation.divider_block(block)
         elif self.__same_type(block, HeaderBlock):
-            self.msteams_implementation.header_block(block)
+            msteams_implementation.header_block(block)
         elif self.__same_type(block, TableBlock):
-            self.msteams_implementation.table(block)
+            msteams_implementation.table(block)
         elif self.__same_type(block, ListBlock):
-            self.msteams_implementation.list_of_strings(block)
+            msteams_implementation.list_of_strings(block)
         elif self.__same_type(block, KubernetesDiffBlock):
-            self.msteams_implementation.diff(block)
+            msteams_implementation.diff(block)
         elif self.__same_type(block, CallbackBlock):
             logging.error(
                 f"CallbackBlock not supported for msteams"
@@ -49,17 +47,18 @@ class MsTeamskSender:
     def __same_type(self, var, class_type):
         return type(var).__name__ == class_type.__name__
 
-    def send_finding_to_msteams(self, msteams_implementation: MsTeamsImplementation, finding: Finding):
-        self.msteams_implementation = msteams_implementation
+    def send_finding_to_msteams(self, msteams_hookurl: str, finding: Finding):
+        msteams_implementation = MsTeamsImplementation(msteams_hookurl, finding.title, finding.description)
+
         for enrichment in finding.enrichments:
                         
             files_blocks, other_blocks = self.__split_block_to_files_and_all_the_rest(enrichment)
 
             for block in other_blocks:
-                self.__to_msteams(block)
+                self.__to_msteams(block, msteams_implementation)
 
-            self.msteams_implementation.upload_files(files_blocks)
+            msteams_implementation.upload_files(files_blocks)
 
-            self.msteams_implementation.new_card_section()
+            msteams_implementation.new_card_section()
 
-        self.msteams_implementation.send()
+        msteams_implementation.send()
