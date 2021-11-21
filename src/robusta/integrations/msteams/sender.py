@@ -60,6 +60,6 @@ class MsTeamskSender:
 
             msteams_single_msg.upload_files(files_blocks)
 
-            msteams_single_msg.new_card_section()
+            msteams_single_msg.write_current_section()
 
         msteams_single_msg.send()

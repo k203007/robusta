@@ -40,13 +40,7 @@ class MsTeamsSingleMsg:
             block = self.elements.text_block(text=description)
             self.__write_blocks_to_dict(self.entire_msg, block)
 
-
-    # TODO: make __write_section_to_card public - WRITE_CURRENT_SECTION
-    def new_card_section(self):
-        # write previous section
-        self.__write_section_to_card()
-
-    def __write_section_to_card(self):
+    def write_current_section(self):
         if len(self.current_section) == 0:
             return
 
@@ -156,7 +150,7 @@ class MsTeamsSingleMsg:
     def send(self):
         try:
             # TODO: do i need this here ?
-            self.__write_section_to_card()
+            self.write_current_section()
 
             complete_card_map = self.elements.card(self.entire_msg)
             self._put_text_files_data_up_to_max_limit(complete_card_map)
