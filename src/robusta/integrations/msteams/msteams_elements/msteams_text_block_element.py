@@ -3,7 +3,7 @@ from ..msteams_mark_down_fix_url import MsTeamsMarkDOwnFixUrl
 
 class MsTeamsTextBlockElement(MsTeamsBaseElement):
     def __init__(self, text : str, isSubtle : bool = None, wrap: bool = None, weight: str = None, isVisible : bool = True, 
-                separator : bool = False, font_size : str = 'medium', horizontalAlignment : str = "left") -> MsTeamsBaseElement:
+                separator : bool = False, font_size : str = 'medium', horizontalAlignment : str = "left") -> None:
 
         curr_map : map = self.__text_block(text, isSubtle, wrap, weight, isVisible, 
                 separator, font_size, horizontalAlignment) 

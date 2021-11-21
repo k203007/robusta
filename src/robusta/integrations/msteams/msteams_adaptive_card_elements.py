@@ -5,12 +5,6 @@ from .msteams_mark_down_fix_url import MsTeamsMarkDOwnFixUrl
 class MsTeamsAdaptiveCardElements:
     __type = 'type'
 
-    def image_set(self, images_list : list[map]) -> map:
-        block = {}
-        block[self.__type] =  "ImageSet"
-        block["imageSize"] = "large"
-        block["images"]=  images_list
-        return block
 
     def column_set(self, columns_list : list[map]) -> map:
         block = {}
@@ -29,13 +23,6 @@ class MsTeamsAdaptiveCardElements:
 
     def get_image_url_size(self, image_map : map) -> int:
         return len(image_map["url"])
-
-    def present_image(self, url : str) -> map:
-        block = {}
-        block[self.__type] = "Image"
-        block["url"] = url
-        block["msTeams"] = { "allowExpand": True }    
-        return block      
 
     def container(self, key : str = None, items : list[map] = []):
         block = {}

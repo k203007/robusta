@@ -1,8 +1,7 @@
 from .msteams_base_element import MsTeamsBaseElement
 
 class MsTeamsCardElement(MsTeamsBaseElement):
-    def __init__(self, body: list[MsTeamsBaseElement]) -> map:
-        super().__init__()
+    def __init__(self, body: list[MsTeamsBaseElement]) -> None:
         content = {}
         content["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json"
         content["type"] = "AdaptiveCard"
@@ -19,7 +18,7 @@ class MsTeamsCardElement(MsTeamsBaseElement):
         block["type"] = "message"
         block["attachments"] = [atachment_map]
 
-        return block
+        super().__init__(block)
     
     def __to_map_list(self, elements : list[MsTeamsBaseElement]):
         curr_list = []
