@@ -21,10 +21,7 @@ class MsTeamsSingleMsg:
     MAX_SIZE_IN_BYTES = (1024 * 20)
     msteams_hookurl = ''
 
-
-
-    # move out the title and description - call it in the sender
-    def __init__(self, msteams_hookurl: str, title: str, description: str):        
+    def __init__(self, msteams_hookurl: str):
         self.entire_msg = []
         self.current_section = []
 
@@ -32,8 +29,9 @@ class MsTeamsSingleMsg:
         self.url_image_map__for_image_files = []
 
         self.elements = MsTeamsAdaptiveCardElements()
-
         self.msteams_hookurl = msteams_hookurl
+
+    def write_title_and_desc(self, title: str, description: str):
         block = self.elements.text_block(text=title, font_size='extraLarge')
         self.__write_blocks_to_dict(self.entire_msg, block)
 
@@ -41,6 +39,7 @@ class MsTeamsSingleMsg:
         if description is not None:
             block = self.elements.text_block(text=description)
             self.__write_blocks_to_dict(self.entire_msg, block)
+
 
     # TODO: make __write_section_to_card public - WRITE_CURRENT_SECTION
     def new_card_section(self):

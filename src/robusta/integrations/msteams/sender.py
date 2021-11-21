@@ -48,8 +48,9 @@ class MsTeamskSender:
         return type(var).__name__ == class_type.__name__
 
     def send_finding_to_msteams(self, msteams_hookurl: str, finding: Finding):
-        msteams_single_msg = MsTeamsSingleMsg(msteams_hookurl, finding.title, finding.description)
-
+        msteams_single_msg = MsTeamsSingleMsg(msteams_hookurl)        
+        msteams_single_msg.write_title_and_desc(finding.title, finding.description)
+        
         for enrichment in finding.enrichments:
                         
             files_blocks, other_blocks = self.__split_block_to_files_and_all_the_rest(enrichment)
