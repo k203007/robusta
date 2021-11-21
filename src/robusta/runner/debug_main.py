@@ -81,7 +81,7 @@ Robusta's Recommendation: Remove this pod's CPU limit entirely. <https://github.
 
 
     #finding.enrichments.append(Enrichment([DividerBlock(), diff, markdown, list_block, markdown2, table]))
-    finding.enrichments.append(Enrichment([jpg_file, jpg_file2, svg_file1, png_file1]))
+    finding.enrichments.append(Enrichment([text_file]))
     
 
 

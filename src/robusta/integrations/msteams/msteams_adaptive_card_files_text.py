@@ -146,7 +146,7 @@ class MsTeamsAdaptiveCardFilesText:
         # will be completed later
         text_block = MsTeamsTextBlockElement('', wrap=True, weight='bolder', isVisible=True)
         self.text_map_and_single_text_lines_list.append([text_block, text_lines_list])
-        return MsTeamsContainerElement(key=key, items=[text_block])
+        return MsTeamsContainerElement(key=key, elements=[text_block])
 
     def __its_txt_file(self, file_name: str):
         txt_prefix_list = ['.txt', '.json', '.yaml', '.log']

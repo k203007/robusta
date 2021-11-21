@@ -2,9 +2,9 @@ from .msteams_base_element import MsTeamsBaseElement
 
 class MsTeamsContainerElement(MsTeamsBaseElement):
     
-    def __init__(self, elements: list[MsTeamsBaseElement]) -> None:
+    def __init__(self, key : str = None, elements: list[MsTeamsBaseElement] = []) -> None:
         self.column_list = []
-        super().__init__(self.__container(elements))
+        super().__init__(self.__container(key, elements))
 
     def __container(self, key : str = None, elements : list[MsTeamsBaseElement] = []):
         block = {}
@@ -20,5 +20,5 @@ class MsTeamsContainerElement(MsTeamsBaseElement):
     def __get_map_list(self, elements: list[MsTeamsBaseElement]):
         map_list = []
         for e in elements:
-            map_list.append(e.get_map_value)
+            map_list.append(e.get_map_value())
         return map_list

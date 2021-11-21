@@ -147,8 +147,9 @@ class MsTeamsSingleMsg:
             # TODO: restore it
             # self._put_text_files_data_up_to_max_limit(complete_card_map)
 
-            #print(json.dumps(complete_card_map, ensure_ascii=False))      
+            #print(json.dumps(complete_card_map, ensure_ascii=False))
             # print(self.__get_current_card_len(complete_card_map))
+            print(complete_card_map)
             print('\n\n\n\n\n' + json.dumps(complete_card_map, indent=4))   
 
             response = requests.post(self.msteams_hookurl, json= complete_card_map)

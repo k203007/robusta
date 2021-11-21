@@ -14,7 +14,7 @@ class MsTeamsColumnElement(MsTeamsBaseElement):
         return block
 
     def single_column(self, width_strech : bool = False, isVisible : bool = True, 
-                key : str = None, items : list[map] = [], action : MsTeamsActionElement = {}):
+                key : str = None, items : list[map] = [], action : MsTeamsActionElement = None):
         block = {}
         block['type'] = "Column"
         if width_strech is not None:
@@ -27,7 +27,8 @@ class MsTeamsColumnElement(MsTeamsBaseElement):
         if key is not None:
             block["id"] = key
         block["items"] = self.__to_map_list(items)
-        block = block | action
+        if action is not None:
+            block = block | action.get_map_value()
 
         self.column_list.append(block)
 
