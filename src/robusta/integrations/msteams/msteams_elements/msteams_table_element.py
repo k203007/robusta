@@ -15,14 +15,16 @@ class MsTeamsTableElement:
     def __create_table(self, header_list: list[str], rows: list[list[str]]) -> map:
         all_columns = []
         for index in range(len(header_list)):
-            column = []
-            column.append(MsTeamsTextBlockElement(text=header_list[index], weight="bolder"))
-            column = column + self.__create_column(rows_list=rows, index=index)
-            all_columns.append(self.elements.column(items= column, width_strech=False))
-
+            single_column = []
+            single_column.append(MsTeamsTextBlockElement(text=header_list[index], weight="bolder"))
+            single_column = single_column + self.__create_single_column_list(rows_list=rows, index=index)
+            all_columns.append(all_columns)
+        
+        column_element = MsTeamsColumnElement()
+        column_element.column_list(items = all_columns, width_strech = bool)
         return MsTeamsColumnElement(all_columns)
 
-    def __create_column(self, rows_list : list[list[str]], index : int) -> list[map]:
+    def __create_single_column_list(self, rows_list : list[list[str]], index : int) -> list[map]:
         first_row = True
         column = []
         for row_list in rows_list:            
