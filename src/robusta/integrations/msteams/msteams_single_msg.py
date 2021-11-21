@@ -138,11 +138,8 @@ class MsTeamsSingleMsg:
             if not line_added:
                 return
 
-    # TODO: write explanation about the interactive and need to be URL.
-    # USE: postman as debug
     def send(self):
         try:
-            # TODO: do i need this here ?
             self.write_current_section()
 
             complete_card_map = self.elements.card(self.entire_msg)
@@ -153,7 +150,6 @@ class MsTeamsSingleMsg:
             response = requests.post(self.msteams_hookurl, json= complete_card_map)
             if 'error' in response.content.decode():
                 print('failed !!!')
-                # TODO: make sure its OK
                 raise Exception('error in sending: ' + response.content.decode()) 
             print('success...')            
 
