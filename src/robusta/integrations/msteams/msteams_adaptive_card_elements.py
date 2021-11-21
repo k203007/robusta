@@ -5,13 +5,6 @@ from .msteams_mark_down_fix_url import MsTeamsMarkDOwnFixUrl
 class MsTeamsAdaptiveCardElements:
     __type = 'type'
 
-
-    def column_set(self, columns_list : list[map]) -> map:
-        block = {}
-        block[self.__type] =  "ColumnSet"
-        block["columns"]=  columns_list
-        return block
-
     def action(self, title : str, target_elements : list[map]):
         block = {}
         block["selectAction"] = {}
@@ -33,23 +26,6 @@ class MsTeamsAdaptiveCardElements:
             block["id"] = key
         block["bleed"] = False
         block["items"] = items
-        return block
-
-    def column(self, width_strech : bool = False, isVisible : bool = True, 
-                key : str = None, items : list[map] = [], action : map = {}):
-        block = {}
-        block[self.__type] = "Column"
-        if width_strech is not None:
-            if width_strech:
-                block["width"] = "stretch"
-            else:
-                block["width"] = "auto"
-
-        block["isVisible"] = isVisible
-        if key is not None:
-            block["id"] = key
-        block["items"] = items
-        block = block | action
         return block
 
     def action_toggle_target_elements(self, visible_keys : list[str], invisible_keys : list[str]) -> list[map]:
