@@ -112,7 +112,7 @@ class MsTeamsSingleMsg:
         self.__write_to_current_section([MsTeamsTextBlockElement(self.__new_line_replacer('\n\n'))])
 
     def header_block(self, block: BaseBlock):
-        current_header_string = self.__apply_length_limit(block.text, 150) + self.__new_line_replacer('\n\n')
+        current_header_string = self.__apply_length_limit(block.text) + self.__new_line_replacer('\n\n')
         self.__write_to_current_section([MsTeamsTextBlockElement(current_header_string, font_size='large')])
 
     # dont include the base 64 images in the total size calculation
@@ -163,6 +163,8 @@ class MsTeamsSingleMsg:
     def __get_current_card_len(self, complete_card_map : map):
         return len(json.dumps(complete_card_map, ensure_ascii=True, indent=2))
 
+    #  keep the length limit because there is a limited size to msg to we dont want not 
+    # do leave space for other msgs
     def __apply_length_limit(self, msg: str, max_length: int = 3000):
         if len(msg) <= max_length:
             return msg
