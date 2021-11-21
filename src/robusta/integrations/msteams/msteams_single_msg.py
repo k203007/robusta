@@ -28,7 +28,6 @@ class MsTeamsSingleMsg:
         self.current_section : list[MsTeamsBaseElement] = []
 
         self.text_map_and_single_text_lines_list__for_text_files = []
-        self.url_image_map__for_image_files = []
 
         self.msteams_hookurl = msteams_hookurl
 
@@ -76,7 +75,6 @@ class MsTeamsSingleMsg:
 
         self.text_map_and_single_text_lines_list__for_text_files += \
             msteams_files.get_text_map_and_single_text_lines_list__for_text_files()
-        self.url_image_map__for_image_files += msteams_files.get_url_map_list()
         
         self.__write_to_current_section(block_list)
 

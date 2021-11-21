@@ -26,9 +26,6 @@ class MsTeamsAdaptiveCardFilesImage:
             return []
         return MsTeamsImagesElement(url_list)
 
-    def get_url_map_list(self):
-        return self.url_map_list
-
     def __get_tmp_file_path(self):
         tmp_dir_path = tempfile.gettempdir() 
         return tmp_dir_path + '/' + str(uuid.uuid1())

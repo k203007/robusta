@@ -26,6 +26,3 @@ class MsTeamsAdaptiveCardFiles(MsTeamsBaseElement):
     # TODO - make this shorter and more clear
     def get_text_map_and_single_text_lines_list__for_text_files(self):
         return self.text_files.get_text_map_and_single_text_lines_list()
-
-    def get_url_map_list(self):
-        return self.image_files.get_url_map_list()        
