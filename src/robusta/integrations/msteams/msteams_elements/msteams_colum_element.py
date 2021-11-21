@@ -5,7 +5,6 @@ class MsTeamsColumnElement(MsTeamsBaseElement):
     def __init__(self) -> None:
         self.column_list = []
         super().__init__(self.__column_set())
-        pass
 
     def __column_set(self) -> map:
         block = {}

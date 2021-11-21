@@ -14,20 +14,6 @@ class MsTeamsAdaptiveCardElements:
 
         return block
 
-    def get_image_url_size(self, image_map : map) -> int:
-        return len(image_map["url"])
-
-    def container(self, key : str = None, items : list[map] = []):
-        block = {}
-        block[self.__type] = "Container"
-        block["style"] = "accent"
-        block["isVisible"] = False
-        if key is not None:
-            block["id"] = key
-        block["bleed"] = False
-        block["items"] = items
-        return block
-
     def action_toggle_target_elements(self, visible_keys : list[str], invisible_keys : list[str]) -> list[map]:
         actions = []
 
