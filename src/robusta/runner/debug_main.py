@@ -69,7 +69,8 @@ def main():
     table = TableBlock([['row11', 'row12','row13', 'row14'],['row21', 'row22','row2311111', 'row24']], ['header1', 'header2', 'header3', 'header4'])
 
     #enrichment = Enrichment([diff, list_block, markdown,markdown2, text_file, text_file2, text_file3])
-    enrichment = Enrichment([diff, list_block,markdown,markdown2,table,text_file,text_file2,jpg_file,svg_file1, jpg_file2,text_file3 ])
+    #enrichment = Enrichment([diff, list_block,markdown,markdown2,table,text_file,text_file2,jpg_file,svg_file1, jpg_file2,text_file3])
+    enrichment = Enrichment([jpg_file])
 
 
     m = '''Alert Explanation: This pod is throttled. It wanted to use the CPU and was blocked due to it's CPU limit (<https://github.com/robusta-dev/alert-explanations/wiki/CPUThrottlingHigh-(Prometheus-Alert)|learn more>)
@@ -79,7 +80,8 @@ Robusta's Recommendation: Remove this pod's CPU limit entirely. <https://github.
     markdown2 = MarkdownBlock(m)    
 
 
-    finding.enrichments.append(Enrichment([DividerBlock(), diff, markdown, list_block, markdown2, table]))
+    #finding.enrichments.append(Enrichment([DividerBlock(), diff, markdown, list_block, markdown2, table]))
+    finding.enrichments.append(Enrichment([jpg_file, jpg_file2, svg_file1, png_file1]))
     
 
 
