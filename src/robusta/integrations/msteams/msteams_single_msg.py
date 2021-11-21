@@ -66,10 +66,9 @@ class MsTeamsSingleMsg:
         separator_block = MsTeamsTextBlockElement(text='_' * 30, font_size='small', horizontalAlignment='center')
         self.__write_to_current_section([space_block,separator_block,space_block,space_block])
 
-    # TODO - return list of elements - remove all lines
     def upload_files(self, file_blocks: list[FileBlock]):
         msteams_files = MsTeamsAdaptiveCardFiles()
-        block_list : list = msteams_files.upload_files(file_blocks)
+        block_list : list[MsTeamsBaseElement] = msteams_files.upload_files(file_blocks)
         if len(block_list) > 0:
             self.__sub_section_separator()
 
@@ -83,8 +82,6 @@ class MsTeamsSingleMsg:
         msteam_table = MsTeamsTableElement(table_block.headers, table_block.rows)
         self.__write_to_current_section([msteam_table])
     
-    # TODO: apply length limit
-    # TODO: CHECK IF THERE IS LIMIT IN TEXT BLOCK - IF NOT DELETE APPLY_LENGTH_LIMIT
     def list_of_strings(self, list_block: ListBlock):
         self.__sub_section_separator()
         for line in list_block.items:
@@ -103,18 +100,17 @@ class MsTeamsSingleMsg:
         if not block.text:
             return
         self.__sub_section_separator()
-        text = self.__apply_length_limit(block.text) + self.__new_line_replacer('\n\n')
+        text = block.text + '\n\n'
         self.__write_to_current_section([MsTeamsTextBlockElement(text)])
 
     def divider_block(self, block: BaseBlock):
-        self.__write_to_current_section([MsTeamsTextBlockElement(self.__new_line_replacer('\n\n'))])
+        self.__write_to_current_section([MsTeamsTextBlockElement('\n\n')])
 
     def header_block(self, block: BaseBlock):
-        current_header_string = self.__apply_length_limit(block.text) + self.__new_line_replacer('\n\n')
+        current_header_string = block.text + '\n\n'
         self.__write_to_current_section([MsTeamsTextBlockElement(current_header_string, font_size='large')])
 
     # dont include the base 64 images in the total size calculation
-    # TODO: ELEMENT of textfileElement
     def _put_text_files_data_up_to_max_limit(self, complete_card_map : map):
         curr_images_len = 0
         for element in self.entire_msg:
@@ -160,15 +156,3 @@ class MsTeamsSingleMsg:
 
     def __get_current_card_len(self, complete_card_map : map):
         return len(json.dumps(complete_card_map, ensure_ascii=True, indent=2))
-
-    #  keep the length limit because there is a limited size to msg to we dont want not 
-    # do leave space for other msgs
-    def __apply_length_limit(self, msg: str, max_length: int = 3000):
-        if len(msg) <= max_length:
-            return msg
-        truncator = "..."
-        return self.__new_line_replacer(msg[: max_length - len(truncator)] + truncator)
-
-    def __new_line_replacer(self, text : str):
-        return text
-
