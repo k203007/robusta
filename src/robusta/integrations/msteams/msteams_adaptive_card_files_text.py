@@ -1,6 +1,10 @@
 import uuid
 
-from .msteams_adaptive_card_elements import MsTeamsAdaptiveCardElements
+from .msteams_elements.msteams_text_block_element import MsTeamsTextBlockElement
+from .msteams_elements.msteams_action_element import MsTeamsActionElement
+from .msteams_elements.msteams_colum_element import MsTeamsColumnElement
+from .msteams_elements.msteams_container_element import MsTeamsContainerElement
+
 from ...core.reporting.blocks import *
 
 # TODO: try to create element for each open close text and for each Text Container that presents the file
@@ -39,8 +43,6 @@ class MsTeamsAdaptiveCardFilesText:
 
         self.text_map_and_single_text_lines_list = []
 
-        self.elements = MsTeamsAdaptiveCardElements()
-
     def create_files_for_presentation(self, file_blocks: list[FileBlock]) -> list[map]:
         file_content_list = []
 
@@ -71,9 +73,9 @@ class MsTeamsAdaptiveCardFilesText:
         open_text_action = self.__action(index, open=True, title='press to open')
         close_text_action = self.__action(index, open =False, title='press to close')
 
-        open_text = self.elements.text_block('***open ' + file_name + '***', isSubtle=False)
-        close_start = self.elements.text_block('***close ' + file_name + '***', isSubtle=False)
-        close_end = self.elements.text_block('***close ' + file_name + '***', isSubtle=False)
+        open_text = MsTeamsTextBlockElement('***open ' + file_name + '***', isSubtle=False)
+        close_start = MsTeamsTextBlockElement('***close ' + file_name + '***', isSubtle=False)
+        close_end = MsTeamsTextBlockElement('***close ' + file_name + '***', isSubtle=False)
 
         self.open_text_list.append(open_text)
         self.close_start_text_list.append(close_start)
@@ -86,27 +88,22 @@ class MsTeamsAdaptiveCardFilesText:
         self.text_file_presentaiton_list.append(self.__present_text_file_block(self.text_file_presentaiton_key_list[index], content.decode('utf-8')))
 
     def __manage_all_text_to_send(self):
-        columns_set_list = []
-
-        top_column_list = []
-        botom_column_list = []
+        top_column_set = MsTeamsColumnElement()        
+        bottom_column_set = MsTeamsColumnElement()
         for index in range(len(self.open_text_list)):
-            top_column_list.append( self.elements.column(isVisible=True, key=self.open_key_list[index], 
-                            items=[self.open_text_list[index]], action= self.action_open_text_list[index]))
+            top_column_set.single_column(isVisible=True, key=self.open_key_list[index], 
+                            items=[self.open_text_list[index]], action= self.action_open_text_list[index])
 
-            top_column_list.append(  self.elements.column(isVisible=False, key=self.close_start_key_list[index], 
-                        items=[self.close_start_text_list[index]], action=self.action_close_start_text_list[index]))
+            top_column_set.single_column(isVisible=False, key=self.close_start_key_list[index], 
+                        items=[self.close_start_text_list[index]], action=self.action_close_start_text_list[index])
 
             # spaces between files
-            top_column_list.append(self.elements.column(isVisible=True, items=[self.elements.text_block(' ')]))
-            top_column_list.append(self.elements.column(isVisible=True, items=[self.elements.text_block(' ')]))
+            top_column_set.single_column(isVisible=True, items=[MsTeamsTextBlockElement(' ')])
+            top_column_set.single_column(isVisible=True, items=[MsTeamsTextBlockElement(' ')])
 
-            botom_column_list.append(  self.elements.column(isVisible=False, key=self.close_end_key_list[index], 
-                        items=[self.close_end_text_list[index]], action=self.action_close_end_text_list[index]))
-
-        top_column_set = self.elements.column_set(top_column_list)        
-        bottom_column_set = self.elements.column_set(botom_column_list)
-
+            bottom_column_set.single_column(isVisible=False, key=self.close_end_key_list[index], 
+                        items=[self.close_end_text_list[index]], action=self.action_close_end_text_list[index])
+        
         list_to_return = [top_column_set]
         list_to_return += self.text_file_presentaiton_list
         list_to_return.append(bottom_column_set)
@@ -134,10 +131,8 @@ class MsTeamsAdaptiveCardFilesText:
         for key in self.text_file_presentaiton_key_list:
             visible = open and (curr_key == key)
             visible_elements_map[visible].append(key)
-        visible_elements : list[map] = self.elements.action_toggle_target_elements(
-            visible_keys= visible_elements_map[True], invisible_keys =visible_elements_map[False])
 
-        return self.elements.action (title=title, target_elements=visible_elements)
+        return MsTeamsActionElement(title, visible_keys= visible_elements_map[True], invisible_keys =visible_elements_map[False])
 
     # there is a limit to the number of letters you can write - dont know what it is !!!
     # /t doesn't work so we need to simulate spaces (which are trimmed so we use '. . . ')
@@ -149,9 +144,9 @@ class MsTeamsAdaptiveCardFilesText:
             text_lines_list.append(line + '\n\n')
 
         # will be completed later
-        text_block = self.elements.text_block('', wrap=True, weight='bolder', isVisible=True)
+        text_block = MsTeamsTextBlockElement('', wrap=True, weight='bolder', isVisible=True)
         self.text_map_and_single_text_lines_list.append([text_block, text_lines_list])
-        return self.elements.container(key=key, items=[text_block])
+        return MsTeamsContainerElement(key=key, items=[text_block])
 
     def __its_txt_file(self, file_name: str):
         txt_prefix_list = ['.txt', '.json', '.yaml', '.log']
