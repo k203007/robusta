@@ -8,9 +8,9 @@ from PIL import Image
 
 from ...core.reporting.blocks import *
 from .msteams_elements.msteams_images_element import MsTeamsImagesElement
+from cairosvg import svg2png
 
 # TODO: in read me write that you CANT !!!! UPLOAD files to msteams sharepoint !!!! put the references
-# TODO: convert svg to  jpg usign CAIROSVG.svgtopng
 class MsTeamsAdaptiveCardFilesImage:
 
     def __init__(self):
@@ -77,18 +77,5 @@ class MsTeamsAdaptiveCardFilesImage:
 
     #msteams cant read parsing of url to svg image
     def __svg_convert_bytes_to_jpg(self, bytes : bytes):
-        svg_file_path = self.__get_tmp_file_path()
-        with open(svg_file_path, 'wb') as f:
-            f.write(bytes)
 
-        drawing = svg2rlg(svg_file_path)
-        jpg_file_path = self.__get_tmp_file_path()
-
-        renderPM.drawToFile(drawing, jpg_file_path, fmt="JPG")
-        with open(jpg_file_path, 'rb') as f:
-            jpg_bytes = f.read()
-
-        os.remove(svg_file_path)
-        os.remove(jpg_file_path)
-
-        return self.__jpg_convert_bytes_to_base_64_url(jpg_bytes)
+        return self.__png_convert_bytes_to_base_64_url(svg2png(bytestring=bytes))
