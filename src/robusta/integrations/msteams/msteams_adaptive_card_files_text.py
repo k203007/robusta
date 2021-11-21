@@ -6,10 +6,20 @@ from ...core.reporting.blocks import *
 # TODO: try to create element for each open close text and for each Text Container that presents the file
 # and combine them in this class 
 
+'''
+there are 3 elements for each text file":
+1. row that contains 'open file-name' , and 'close file-name' buttons. 
+   the open is visible and the close is invisible at init stage
+2. container that contains the last lines of the file - invisible at the init stage
+3. row that contains 'close file-name' buttons, invisible at init stage
+
+when a open button is pressed for specific file,  the close file for the current file become visible, 
+and also the container presenting the file text. for all the other files, the 'open file-name' buttons 
+become visible and all the other buttons become invisible
+'''
 class MsTeamsAdaptiveCardFilesText:
 
     def __init__(self):
-        # TODO: explain in comment the keys for open and close 
         self.open_key_list = []
         self.close_start_key_list = []
         self.close_end_key_list = []

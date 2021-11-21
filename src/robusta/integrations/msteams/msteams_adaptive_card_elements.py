@@ -27,12 +27,6 @@ class MsTeamsAdaptiveCardElements:
 
         return block
 
-    def get_text_from_block(self, block : map) -> str:
-        return block["text"]
-
-    def set_text_from_block(self, block : map, text : str):
-        block["text"] = text
-
     def get_image_url_size(self, image_map : map) -> int:
         return len(image_map["url"])
 
@@ -42,23 +36,6 @@ class MsTeamsAdaptiveCardElements:
         block["url"] = url
         block["msTeams"] = { "allowExpand": True }    
         return block      
-
-    def text_block(self, text : str, isSubtle : bool = None, wrap: bool = None, weight: str = None, isVisible : bool = True, 
-                separator : bool = False, font_size : str = 'medium', horizontalAlignment : str = "left"):
-        block = {}
-        block[self.__type] = "TextBlock" 
-        block["text"] = MsTeamsMarkDOwnFixUrl().fix_text(text)
-        block["size"] = font_size
-        block["isVisible"] = isVisible        
-        block["separator"] = separator
-        block["horizontalAlignment"] = horizontalAlignment
-
-        if isSubtle is not None:
-            block["isSubtle"] = isSubtle 
-        block["wrap"] = True
-        if weight is not None:
-            block["weight"] = weight 
-        return block
 
     def container(self, key : str = None, items : list[map] = []):
         block = {}
@@ -104,22 +81,3 @@ class MsTeamsAdaptiveCardElements:
             block["isVisible"] = visible
             block_list.append(block)
         return block_list
-    
-    def card(self, body : list[map]):
-        content = {}
-        content["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json"
-        content["type"] = "AdaptiveCard"
-        content["version"] = "1.2"
-        content["msTeams"] = {"width": "full"}
-        content["body"] = body
-
-        atachment_map = {}
-        atachment_map["contentType"] = "application/vnd.microsoft.card.adaptive"
-        atachment_map["contentUrl"] = None
-        atachment_map["content"] = content
-        
-        block = {}
-        block["type"] = "message"
-        block["attachments"] = [atachment_map]
-
-        return block
