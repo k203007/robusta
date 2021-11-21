@@ -7,9 +7,6 @@ from .msteams_elements.msteams_container_element import MsTeamsContainerElement
 
 from ...core.reporting.blocks import *
 
-# TODO: try to create element for each open close text and for each Text Container that presents the file
-# and combine them in this class 
-
 '''
 there are 3 elements for each text file":
 1. row that contains 'open file-name' , and 'close file-name' buttons. 
@@ -20,6 +17,9 @@ there are 3 elements for each text file":
 when a open button is pressed for specific file,  the close file for the current file become visible, 
 and also the container presenting the file text. for all the other files, the 'open file-name' buttons 
 become visible and all the other buttons become invisible
+
+no point in creating object for each file since it will only hold a few variables such as the file name
+ and keys and the logic is mainly to create the columns and text containers for all the files combine
 '''
 class MsTeamsAdaptiveCardFilesText:
 
