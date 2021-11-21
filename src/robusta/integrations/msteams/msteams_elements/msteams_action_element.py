@@ -1,20 +1,20 @@
-from .msteams_mark_down_fix_url import MsTeamsMarkDOwnFixUrl
+from .msteams_base_element import MsTeamsBaseElement
 
-# TODO: class for each element the inherits from MAP
-# TODO: create a monsterous readme with all the link to websites I found
-class MsTeamsAdaptiveCardElements:
-    __type = 'type'
+class MsTeamsActionElement(MsTeamsBaseElement):
+    def __init__(self, title : str, visible_keys: list[str], invisible_keys: list[str]) -> None:
+        self.column_list = []
+        super().__init__(self.__action(title, visible_keys, invisible_keys))
 
-    def action(self, title : str, target_elements : list[map]):
+    def __action(self, title : str, visible_keys: list[str], invisible_keys: list[str]):
         block = {}
         block["selectAction"] = {}
         block["selectAction"]["type"] = "Action.ToggleVisibility"
         block["selectAction"]["title"] = title
-        block["selectAction"]["targetElements"] = target_elements
+        block["selectAction"]["targetElements"] = self.__action_toggle_target_elements(visible_keys, invisible_keys)
 
         return block
 
-    def action_toggle_target_elements(self, visible_keys : list[str], invisible_keys : list[str]) -> list[map]:
+    def __action_toggle_target_elements(self, visible_keys : list[str], invisible_keys : list[str]) -> list[map]:
         actions = []
 
         actions = self.__set_toggle_action(visible_keys, True)

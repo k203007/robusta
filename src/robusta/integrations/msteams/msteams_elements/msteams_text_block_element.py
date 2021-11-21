@@ -13,7 +13,7 @@ class MsTeamsTextBlockElement(MsTeamsBaseElement):
     def __text_block(self, text : str, isSubtle : bool = None, wrap: bool = None, weight: str = None, isVisible : bool = True, 
                 separator : bool = False, font_size : str = 'medium', horizontalAlignment : str = "left"):
         self.block = {}
-        self.block[self.__type] = "TextBlock" 
+        self.block['type'] = "TextBlock" 
         self.block["text"] = MsTeamsMarkDOwnFixUrl().fix_text(text)
         self.block["size"] = font_size
         self.block["isVisible"] = isVisible        

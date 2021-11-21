@@ -8,7 +8,7 @@ class MsTeamsContainerElement(MsTeamsBaseElement):
 
     def __container(self, key : str = None, elements : list[MsTeamsBaseElement] = []):
         block = {}
-        block[self.__type] = "Container"
+        block['type'] = "Container"
         block["style"] = "accent"
         block["isVisible"] = False
         if key is not None:

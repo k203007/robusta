@@ -8,14 +8,14 @@ class MsTeamsColumnElement(MsTeamsBaseElement):
 
     def __column_set(self) -> map:
         block = {}
-        block[self.__type] =  "ColumnSet"
+        block['type'] =  "ColumnSet"
         block["columns"] = self.column_list
         return block
 
     def single_column(self, width_strech : bool = False, isVisible : bool = True, 
                 key : str = None, items : list[map] = [], action : map = {}):
         block = {}
-        block[self.__type] = "Column"
+        block['type'] = "Column"
         if width_strech is not None:
             if width_strech:
                 block["width"] = "stretch"
