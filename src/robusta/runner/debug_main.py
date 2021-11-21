@@ -66,7 +66,7 @@ def main():
     y2 = DiffDetail(DiffType.ADDED, Container.__class__,'diff in version',[], value='4', other_value='5', report='')
     diff = KubernetesDiffBlock([y1, y2], None, None)
     
-    table = TableBlock([['row11', 'row12','row13', 'row14'],['row21', 'row22','row231111111111111111111111111', 'row24']], ['header1', 'header2', 'header3', 'header4'])
+    table = TableBlock([['row11', 'row12','row13', 'row14'],['row21', 'row22','row2311111', 'row24']], ['header1', 'header2', 'header3', 'header4'])
 
     #enrichment = Enrichment([diff, list_block, markdown,markdown2, text_file, text_file2, text_file3])
     enrichment = Enrichment([diff, list_block,markdown,markdown2,table,text_file,text_file2,jpg_file,svg_file1, jpg_file2,text_file3 ])
@@ -79,7 +79,7 @@ Robusta's Recommendation: Remove this pod's CPU limit entirely. <https://github.
     markdown2 = MarkdownBlock(m)    
 
 
-    finding.enrichments.append(Enrichment([markdown]))
+    finding.enrichments.append(Enrichment([DividerBlock(), diff, markdown, list_block, markdown2, table]))
     
 
 

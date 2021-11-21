@@ -105,6 +105,7 @@ class MsTeamsSingleMsg:
     def markdown_block(self, block: BaseBlock):
         if not block.text:
             return
+        self.__sub_section_separator()
         text = self.__apply_length_limit(block.text) + self.__new_line_replacer('\n\n')
         self.__write_to_current_section([MsTeamsTextBlockElement(text)])
 
