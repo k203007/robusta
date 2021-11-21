@@ -26,7 +26,13 @@ class MsTeamsColumnElement(MsTeamsBaseElement):
         block["isVisible"] = isVisible
         if key is not None:
             block["id"] = key
-        block["items"] = items
+        block["items"] = self.__to_map_list(items)
         block = block | action
 
         self.column_list.append(block)
+
+    def __to_map_list(self, elements : list[MsTeamsBaseElement]):
+        curr_list = []
+        for e in elements:
+            curr_list.append(e.get_map_value())
+        return curr_list    

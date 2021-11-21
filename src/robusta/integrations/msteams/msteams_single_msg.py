@@ -70,7 +70,7 @@ class MsTeamsSingleMsg:
 
     # TODO - return list of elements - remove all lines
     def upload_files(self, file_blocks: list[FileBlock]):
-        msteams_files = MsTeamsAdaptiveCardFiles(file_blocks)
+        msteams_files = MsTeamsAdaptiveCardFiles()
         block_list : list = msteams_files.upload_files(file_blocks)
         if len(block_list) > 0:
             self.__sub_section_separator()
@@ -148,7 +148,7 @@ class MsTeamsSingleMsg:
 
             #print(json.dumps(complete_card_map, ensure_ascii=False))      
             # print(self.__get_current_card_len(complete_card_map))
-            print('\n\n\n\n\n' + json.dumps(complete_card_map, indent=4))      
+            print('\n\n\n\n\n' + json.dumps(complete_card_map, indent=4))   
 
             response = requests.post(self.msteams_hookurl, json= complete_card_map)
             if 'error' in response.content.decode():
