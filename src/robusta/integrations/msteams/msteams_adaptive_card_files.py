@@ -1,18 +1,14 @@
 from ...core.reporting.blocks import *
 from .msteams_adaptive_card_files_image import MsTeamsAdaptiveCardFilesImage
 from .msteams_adaptive_card_files_text import MsTeamsAdaptiveCardFilesText
-from .msteams_elements.msteams_base_element import MsTeamsBaseElement
 
-# TODO: always return Element class (everything inherits from element)
-class MsTeamsAdaptiveCardFiles(MsTeamsBaseElement):
+class MsTeamsAdaptiveCardFiles():
 
     def __init__(self):
-        self.files_keys_list = []
         self.text_files = MsTeamsAdaptiveCardFilesText()
-        self.image_files = MsTeamsAdaptiveCardFilesImage()
-        
+        self.image_files = MsTeamsAdaptiveCardFilesImage()        
 
-    # TODO: - return only one function not 3 
+    # return list of MsTeamsBaseElement - cant return it in the constructor.
     def upload_files(self, file_blocks: list[FileBlock]) -> list[map]:
         image_section_map : map = self.image_files.create_files_for_presentation(file_blocks)
         text_files_section_list = self.text_files.create_files_for_presentation(file_blocks)
