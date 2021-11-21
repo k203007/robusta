@@ -13,8 +13,7 @@ from ...core.reporting.blocks import *
 ACTION_TRIGGER_PLAYBOOK = "trigger_playbook"
 
 # TODO: make subscetion and section the inherits from ELEMENTS
-# TODO: change to MsTeamsSingleMsg
-class MsTeamsImplementation:
+class MsTeamsSingleMsg:
     # actual size according to the DOC is ~28K.
     # it's hard to determine the real size because for example there can be large images that doesn't count
     # and converting the map to json doesn't give us an exact indication of the size so we need to take 

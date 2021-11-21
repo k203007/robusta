@@ -3,7 +3,6 @@ from pydantic.main import BaseModel
 
 from ..sink_config import SinkConfigBase
 from ....integrations.msteams import MsTeamskSender
-from ....integrations.msteams import MsTeamsImplementation
 from ...reporting.blocks import Finding
 from ..sink_base import SinkBase
 import logging
