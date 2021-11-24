@@ -1,3 +1,5 @@
+Python3.9 is currently required due to the use of types like `x: list[int]` and not `x: List[int]`
+
 The msteams message mechanism is based on Msteams Adaptive card.
 
 Python has an old package for Adaptive card, and a newer package to create a basic card which is 
